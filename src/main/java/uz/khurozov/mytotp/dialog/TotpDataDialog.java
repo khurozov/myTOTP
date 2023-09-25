@@ -12,6 +12,8 @@ public class TotpDataDialog extends Dialog<TotpDataDialog.TotpData> {
     public record TotpData(String name, TOTP totp) {}
 
     public TotpDataDialog() {
+        setTitle("myTOTP");
+
         TextField name = new TextField();
         Label nameLabel = new Label("Name:");
         nameLabel.setLabelFor(name);
