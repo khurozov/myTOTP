@@ -9,9 +9,10 @@ import javafx.scene.text.Text;
 import uz.khurozov.totp.TOTP;
 
 public class TotpView extends VBox {
+    private final Text code;
 
     public TotpView(String name, TOTP totp) {
-        final Text code = new Text(totp.getCode());
+        code = new Text(totp.getCode());
         code.setFont(Font.font("Monospace", FontWeight.BLACK, FontPosture.REGULAR, 40));
 
         final Text title = new Text(name);
@@ -25,5 +26,9 @@ public class TotpView extends VBox {
         setSpacing(5);
         setPadding(new Insets(5));
         setFillWidth(true);
+    }
+
+    public String getCode() {
+        return code.getText();
     }
 }

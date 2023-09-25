@@ -1,9 +1,16 @@
 package uz.khurozov.mytotp.controller;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
 import javafx.scene.layout.VBox;
 import uz.khurozov.mytotp.component.TotpView;
 import uz.khurozov.mytotp.dialog.TotpDataDialog;
+import uz.khurozov.mytotp.util.FXUtil;
+
+import java.util.Map;
 
 public class MainController {
     private final TotpDataDialog addDialog = new TotpDataDialog();
@@ -14,7 +21,25 @@ public class MainController {
     @FXML
     void newTotp() {
         addDialog.showAndWait().ifPresent(
-                totpData -> list.getChildren().add(new TotpView(totpData.name(), totpData.totp()))
+                totpData -> {
+                    TotpView totpView = new TotpView(totpData.name(), totpData.totp());
+
+                    MenuItem copy = new MenuItem("Copy", FXUtil.getCopyIcon());
+                    copy.setOnAction(e -> {
+                        Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, totpView.getCode()));
+                    });
+
+                    MenuItem delete = new MenuItem("Delete", FXUtil.getDeleteSvg());
+                    delete.setOnAction(e -> {
+                        list.getChildren().remove(totpView);
+                    });
+
+                    ContextMenu contextMenu = new ContextMenu(copy, delete);
+                    contextMenu.setAutoHide(true);
+                    totpView.setOnContextMenuRequested(e -> contextMenu.show(totpView, e.getScreenX(), e.getScreenY()));
+
+                    list.getChildren().add(totpView);
+                }
         );
     }
 
