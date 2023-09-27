@@ -16,7 +16,7 @@ public class TotpDB {
 
     private TotpDB(String username, String password) {
         USERNAME = username;
-        PASSWORD = password;
+        PASSWORD = password.substring(0, password.indexOf(' ')) + " " + password;
 
         Path path = Path.of(System.getProperty("user.home"));
 
@@ -24,7 +24,7 @@ public class TotpDB {
             path = path.resolve(".local/share");
         }
 
-        JDBC_URL = "jdbc:h2:" + path + File.separator + "myTOTP";
+        JDBC_URL = "jdbc:h2:" + path + File.separator + "myTOTP;CIPHER=FOG";
 
         try (Connection con = getCon()) {
             con.getMetaData();
