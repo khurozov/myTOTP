@@ -16,7 +16,9 @@ public class TotpDB {
 
     private TotpDB(String username, String password) {
         USERNAME = username;
-        PASSWORD = password.substring(0, password.indexOf(' ')) + " " + password;
+        int x = password.indexOf(' ');
+        String filePasswd = x == -1 ? password : password.substring(0, x);
+        PASSWORD = filePasswd + " " + password;
 
         Path path = Path.of(System.getProperty("user.home"));
 
