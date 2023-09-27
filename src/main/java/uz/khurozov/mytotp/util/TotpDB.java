@@ -26,7 +26,7 @@ public class TotpDB {
             path = path.resolve(".local/share");
         }
 
-        JDBC_URL = "jdbc:h2:" + path + File.separator + "myTOTP;CIPHER=FOG";
+        JDBC_URL = "jdbc:h2:" + path + File.separator + "myTOTP;CIPHER=FOG;TRACE_LEVEL_FILE=0";
 
         try (Connection con = getCon()) {
             con.getMetaData();
