@@ -14,8 +14,7 @@ public class TimeBar extends ProgressBar {
         timer.setCycleCount(-1);
         timer.playFromStart();
 
-        getStylesheets().add(FXUtil.cssStringToData(
-                """
+        getStylesheets().add(FXUtil.cssStringToData("""
                 .progress-bar {
                     -fx-min-height: 5;
                     -fx-max-height: 5;
@@ -29,8 +28,7 @@ public class TimeBar extends ProgressBar {
                     -fx-border-color: #00A8CC;
                     -fx-background-insets: 0;
                 }
-                """
-        ));
+                """));
     }
 
     private KeyFrame getKeyFrame(double modMillis, Runnable callback) {

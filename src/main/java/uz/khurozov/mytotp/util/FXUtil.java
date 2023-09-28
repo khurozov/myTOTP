@@ -3,9 +3,12 @@ package uz.khurozov.mytotp.util;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.SVGPath;
+import javafx.stage.PopupWindow;
+import javafx.stage.Window;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Iterator;
 
 public class FXUtil {
     public static String cssStringToData(String css) {
@@ -66,5 +69,20 @@ public class FXUtil {
         region.setPadding(new Insets(2));
 
         return region;
+    }
+
+    public static Window getActiveWindow() {
+        Iterator<Window> windows = Window.getWindows().iterator();
+
+        Window window = null;
+        do {
+            if (!windows.hasNext()) {
+                return window;
+            }
+
+            window = windows.next();
+        } while(!window.isFocused() || window instanceof PopupWindow);
+
+        return window;
     }
 }
