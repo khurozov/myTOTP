@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class TotpDB {
     private static TotpDB instance;
@@ -49,6 +50,20 @@ public class TotpDB {
         }
         instance = new TotpDB(username, password);
         // TODO create table if new db
+        try (Statement statement = instance.getCon().createStatement()){
+            statement.execute("""
+                            CREATE TABLE IF NOT EXISTS totps (
+                                id int primary key auto_increment,
+                                name text not null,
+                                secret text not null,
+                                hmac varchar(10) not null,
+                                password_length int not null,
+                                time_step long not null
+                            )
+                            """);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         isInitialized = true;
     }
 
