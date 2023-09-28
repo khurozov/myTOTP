@@ -7,7 +7,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import uz.khurozov.mytotp.component.TotpView;
+import uz.khurozov.mytotp.component.totp.TotpView;
 import uz.khurozov.mytotp.component.notification.Notification;
 import uz.khurozov.mytotp.dialog.TotpDataDialog;
 import uz.khurozov.mytotp.util.FXUtil;

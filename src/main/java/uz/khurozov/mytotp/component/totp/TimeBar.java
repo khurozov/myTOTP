@@ -1,4 +1,4 @@
-package uz.khurozov.mytotp.component;
+package uz.khurozov.mytotp.component.totp;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -8,7 +8,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.util.Duration;
 import uz.khurozov.mytotp.util.FXUtil;
 
-public class TimeBar extends ProgressBar {
+class TimeBar extends ProgressBar {
     public TimeBar(double modMillis, Runnable callback) {
         Timeline timer = new Timeline(getKeyFrame(modMillis, callback));
         timer.setCycleCount(-1);
