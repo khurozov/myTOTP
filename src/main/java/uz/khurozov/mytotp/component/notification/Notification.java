@@ -26,6 +26,8 @@ public final class Notification {
         pane.setScaleY(0);
         popup = new Popup();
         popup.getContent().setAll(pane);
+        popup.show(FXUtil.getActiveWindow());
+        popup.hide();
 
         this.hideAfter = hideAfter;
         transition = new ScaleTransition(TRANSITION_DURATION, pane);
@@ -77,5 +79,21 @@ public final class Notification {
 
     public void setY(double y) {
         this.yProperty.set(y);
+    }
+
+    public double getX() {
+        return this.xProperty.get();
+    }
+
+    public double getY() {
+        return this.yProperty.get();
+    }
+
+    public double getHeight() {
+        return popup.getHeight();
+    }
+
+    public double getWidth() {
+        return popup.getWidth();
     }
 }
