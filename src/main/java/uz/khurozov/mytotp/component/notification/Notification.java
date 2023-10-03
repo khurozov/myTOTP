@@ -1,5 +1,6 @@
 package uz.khurozov.mytotp.component.notification;
 
+import javafx.animation.Animation;
 import javafx.animation.ScaleTransition;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -18,12 +19,17 @@ public final class Notification {
 
     private final DoubleProperty xProperty;
     private final DoubleProperty yProperty;
+    private final ScaleTransition transition;
 
     public Notification(String title, String text, Duration hideAfter) {
         pane = new NotificationPane(title, text, e -> hide());
+        pane.setScaleY(0);
         popup = new Popup();
         popup.getContent().setAll(pane);
+
         this.hideAfter = hideAfter;
+        transition = new ScaleTransition(TRANSITION_DURATION, pane);
+
         this.xProperty = new SimpleDoubleProperty(0);
         xProperty.addListener((observableValue, oldX, newX) -> popup.setX(newX.doubleValue()));
         this.yProperty = new SimpleDoubleProperty(0);
@@ -33,37 +39,36 @@ public final class Notification {
     public void show(double x, double y) {
         this.xProperty.set(x);
         this.yProperty.set(y);
-        doAnimation(Duration.ZERO);
-        doAnimation(hideAfter);
+        popup.show(FXUtil.getActiveWindow(), xProperty.get(), yProperty.get());
+
+        if (transition.getStatus() != Animation.Status.STOPPED) {
+            transition.pause();
+        }
+        transition.setFromY(0);
+        transition.setToY(1);
+        transition.jumpTo(TRANSITION_DURATION.multiply(pane.getScaleY()));
+        transition.setOnFinished(e -> hide(hideAfter));
+        transition.setDelay(Duration.ZERO);
+        transition.play();
     }
 
     public void show() {
         Rectangle2D bounds = Screen.getPrimary().getBounds();
-        this.xProperty.set(bounds.getMinX());
-        this.yProperty.set(bounds.getMinY());
-        doAnimation(Duration.ZERO);
-        doAnimation(hideAfter);
+        show(bounds.getMinX(), bounds.getMinY());
     }
 
     public void hide() {
-        doAnimation(Duration.ZERO);
+        hide(Duration.ZERO);
     }
 
-    private void doAnimation(Duration delay) {
-        ScaleTransition t = new ScaleTransition(TRANSITION_DURATION, pane);
-        if (!popup.isShowing()) {
-            t.setFromY(0);
-            t.setToY(1);
-
-            popup.show(FXUtil.getActiveWindow(), xProperty.get(), yProperty.get());
-        } else {
-            t.setFromY(1);
-            t.setToY(0);
-
-            t.setOnFinished(e -> popup.hide());
-        }
-        t.setDelay(delay);
-        t.playFromStart();
+    private void hide(Duration delay) {
+        transition.stop();
+        transition.setFromY(1);
+        transition.setToY(0);
+        transition.jumpTo(TRANSITION_DURATION.multiply(1-pane.getScaleY()));
+        transition.setOnFinished(e -> popup.hide());
+        transition.setDelay(delay);
+        transition.play();
     }
 
     public void setX(double x) {
