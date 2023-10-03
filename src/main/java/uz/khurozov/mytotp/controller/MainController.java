@@ -1,14 +1,15 @@
 package uz.khurozov.mytotp.controller;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import uz.khurozov.mytotp.component.notification.Notifications;
 import uz.khurozov.mytotp.component.totp.TotpView;
-import uz.khurozov.mytotp.component.notification.Notification;
 import uz.khurozov.mytotp.dialog.TotpDataDialog;
 import uz.khurozov.mytotp.util.FXUtil;
 
@@ -29,7 +30,11 @@ public class MainController {
                     MenuItem copy = new MenuItem("Copy", FXUtil.getCopyIcon());
                     copy.setOnAction(e -> {
                         Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, totpView.getCode()));
-                        new Notification(null, "Code copied", Duration.seconds(2)).show();
+                        Notifications.create()
+                                .text("Copied " + totpView.getCode())
+                                .hideAfter(Duration.seconds(5))
+                                .position(Pos.BOTTOM_RIGHT)
+                                .show();
                     });
 
                     MenuItem delete = new MenuItem("Delete", FXUtil.getDeleteSvg());

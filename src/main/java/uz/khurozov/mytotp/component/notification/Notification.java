@@ -4,6 +4,8 @@ import javafx.animation.Animation;
 import javafx.animation.ScaleTransition;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
@@ -16,12 +18,13 @@ public final class Notification {
     private final Popup popup;
     private final NotificationPane pane;
     private final Duration hideAfter;
+    private final EventHandler<ActionEvent> onHidden;
 
     private final DoubleProperty xProperty;
     private final DoubleProperty yProperty;
     private final ScaleTransition transition;
 
-    public Notification(String title, String text, Duration hideAfter) {
+    public Notification(String title, String text, Duration hideAfter, EventHandler<ActionEvent> onHidden) {
         pane = new NotificationPane(title, text, e -> hide());
         pane.setScaleY(0);
         popup = new Popup();
@@ -32,15 +35,30 @@ public final class Notification {
         this.hideAfter = hideAfter;
         transition = new ScaleTransition(TRANSITION_DURATION, pane);
 
-        this.xProperty = new SimpleDoubleProperty(0);
+        this.onHidden = onHidden;
+
+        this.xProperty = new SimpleDoubleProperty(this, "x", Double.NaN);
         xProperty.addListener((observableValue, oldX, newX) -> popup.setX(newX.doubleValue()));
-        this.yProperty = new SimpleDoubleProperty(0);
+        this.yProperty = new SimpleDoubleProperty(this, "y", Double.NaN);
         yProperty.addListener((observableValue, oldY, newY) -> popup.setY(newY.doubleValue()));
     }
 
     public void show(double x, double y) {
-        this.xProperty.set(x);
-        this.yProperty.set(y);
+        setX(x);
+        setY(y);
+        doShow();
+    }
+
+    public void show() {
+        Rectangle2D bounds = Screen.getPrimary().getBounds();
+
+        if (Double.isNaN(getX())) setX(bounds.getMinX());
+        if (Double.isNaN(getY())) setY(bounds.getMinY());
+
+        doShow();
+    }
+
+    private void doShow() {
         popup.show(FXUtil.getActiveWindow(), xProperty.get(), yProperty.get());
 
         if (transition.getStatus() != Animation.Status.STOPPED) {
@@ -54,11 +72,6 @@ public final class Notification {
         transition.play();
     }
 
-    public void show() {
-        Rectangle2D bounds = Screen.getPrimary().getBounds();
-        show(bounds.getMinX(), bounds.getMinY());
-    }
-
     public void hide() {
         hide(Duration.ZERO);
     }
@@ -68,25 +81,30 @@ public final class Notification {
         transition.setFromY(1);
         transition.setToY(0);
         transition.jumpTo(TRANSITION_DURATION.multiply(1-pane.getScaleY()));
-        transition.setOnFinished(e -> popup.hide());
+        transition.setOnFinished(e -> {
+            popup.hide();
+            if (onHidden != null) {
+                onHidden.handle(new ActionEvent(this, null));
+            }
+        });
         transition.setDelay(delay);
         transition.play();
-    }
-
-    public void setX(double x) {
-        this.xProperty.set(x);
-    }
-
-    public void setY(double y) {
-        this.yProperty.set(y);
     }
 
     public double getX() {
         return this.xProperty.get();
     }
 
+    public void setX(double x) {
+        this.xProperty.set(x);
+    }
+
     public double getY() {
         return this.yProperty.get();
+    }
+
+    public void setY(double y) {
+        this.yProperty.set(y);
     }
 
     public double getHeight() {
