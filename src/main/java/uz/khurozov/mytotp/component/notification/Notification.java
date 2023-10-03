@@ -42,7 +42,7 @@ public final class Notification {
         popup.show(FXUtil.getActiveWindow(), xProperty.get(), yProperty.get());
 
         if (transition.getStatus() != Animation.Status.STOPPED) {
-            transition.pause();
+            transition.stop();
         }
         transition.setFromY(0);
         transition.setToY(1);
