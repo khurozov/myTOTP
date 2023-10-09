@@ -1,13 +1,15 @@
 package uz.khurozov.mytotp.controller;
 
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DataFormat;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
-import javafx.util.Duration;
 import uz.khurozov.mytotp.component.notification.Notifications;
 import uz.khurozov.mytotp.component.totp.TotpView;
 import uz.khurozov.mytotp.dialog.TotpDataDialog;
@@ -22,33 +24,64 @@ public class MainController {
     private VBox list;
 
     @FXML
-    void newTotp() {
+    void initialize() {
+        Platform.runLater(() -> {
+            list.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), this::newTotp);
+
+            MenuItem miAdd = new MenuItem("Add", new ImageView(FXUtil.getImage("add.png")));
+            miAdd.setOnAction(e -> this.newTotp());
+
+            MenuItem miCopy = new MenuItem("Copy", new ImageView(FXUtil.getImage("copy.png")));
+            miCopy.setOnAction(this::copyTotpCode);
+
+            MenuItem miDelete = new MenuItem("Delete", new ImageView(FXUtil.getImage("delete.png")));
+            miDelete.setOnAction(this::deleteTotpView);
+
+            ContextMenu contextMenu = new ContextMenu(miAdd, miCopy, miDelete);
+            contextMenu.setAutoHide(true);
+
+            list.getParent().setOnContextMenuRequested(e -> {
+                TotpView totpView = null;
+                if (e.getTarget() instanceof TotpView) {
+                    totpView = ((TotpView) e.getTarget());
+                }
+                if (((Node) e.getTarget()).getParent() instanceof TotpView) {
+                    totpView = ((TotpView) ((Node) e.getTarget()).getParent());
+                }
+
+                miCopy.setDisable(totpView == null);
+                miCopy.setUserData(totpView);
+                miDelete.setDisable(totpView == null);
+                miDelete.setUserData(totpView);
+
+                contextMenu.show(list, e.getScreenX(), e.getScreenY());
+            });
+        });
+    }
+
+    private void newTotp() {
         addDialog.showAndWait().ifPresent(
                 totpData -> {
-                    TotpView totpView = new TotpView(totpData.name(), totpData.totp());
-
-                    MenuItem copy = new MenuItem("Copy", FXUtil.getCopyIcon());
-                    copy.setOnAction(e -> {
-                        Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, totpView.getCode()));
-                        Notifications.create()
-                                .text("Copied " + totpView.getCode())
-                                .hideAfter(Duration.seconds(5))
-                                .position(Pos.BOTTOM_RIGHT)
-                                .show();
-                    });
-
-                    MenuItem delete = new MenuItem("Delete", FXUtil.getDeleteSvg());
-                    delete.setOnAction(e -> {
-                        list.getChildren().remove(totpView);
-                    });
-
-                    ContextMenu contextMenu = new ContextMenu(copy, delete);
-                    contextMenu.setAutoHide(true);
-                    totpView.setOnContextMenuRequested(e -> contextMenu.show(totpView, e.getScreenX(), e.getScreenY()));
-
-                    list.getChildren().add(totpView);
+                    list.getChildren().add(new TotpView(totpData.name(), totpData.totp()));
                 }
         );
+    }
+
+    private void copyTotpCode(ActionEvent e) {
+        TotpView totpView = (TotpView) ((MenuItem) e.getSource()).getUserData();
+        String code = totpView.getCode();
+
+        Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, code));
+
+        Notifications.create().text("Code copied").show();
+    }
+
+    private void deleteTotpView(ActionEvent e) {
+        TotpView totpView = (TotpView) ((MenuItem) e.getSource()).getUserData();
+
+        list.getChildren().remove(totpView);
+
+        Notifications.create().text("Deleted").position(Pos.TOP_RIGHT).show();
     }
 
 }
