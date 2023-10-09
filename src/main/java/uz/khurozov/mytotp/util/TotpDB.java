@@ -2,10 +2,7 @@ package uz.khurozov.mytotp.util;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class TotpDB {
     private static TotpDB instance;
@@ -21,30 +18,24 @@ public class TotpDB {
         String filePasswd = x == -1 ? password : password.substring(0, x);
         PASSWORD = filePasswd + " " + password;
 
+        JDBC_URL = "jdbc:h2:" + getFilePath() + ";CIPHER=FOG;TRACE_LEVEL_FILE=0";
+    }
+
+    public static String getFilePath() {
         Path path = Path.of(System.getProperty("user.home"));
 
         if (System.getProperty("os.name").toUpperCase().startsWith("LINUX")) {
             path = path.resolve(".local/share");
         }
 
-        JDBC_URL = "jdbc:h2:" + path + File.separator + "myTOTP;CIPHER=FOG;TRACE_LEVEL_FILE=0";
-
-        try (Connection con = getCon()) {
-            con.getMetaData();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return path + File.separator + "myTOTP";
     }
 
-    private Connection getCon() {
-        try {
-            return DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    private Connection getCon() throws SQLException {
+        return DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
     }
 
-    public static synchronized void init(String username, String password) {
+    public static synchronized void init(String username, String password) throws IllegalAccessException {
         if (isInitialized) {
             throw new IllegalStateException("DB has been initialized already");
         }
@@ -55,12 +46,14 @@ public class TotpDB {
                             CREATE TABLE IF NOT EXISTS totps (
                                 id int primary key auto_increment,
                                 name text not null,
-                                secret text not null,
+                                secret text unique not null,
                                 hmac varchar(10) not null,
                                 password_length int not null,
                                 time_step long not null
                             )
                             """);
+        } catch (SQLInvalidAuthorizationSpecException | SQLNonTransientConnectionException e) {
+            throw new IllegalAccessException("Wrong username or password");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
