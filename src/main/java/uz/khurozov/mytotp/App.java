@@ -1,18 +1,15 @@
 package uz.khurozov.mytotp;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import uz.khurozov.mytotp.component.TotpListPane;
 import uz.khurozov.mytotp.util.FXUtil;
-
-import java.io.IOException;
 
 public class App extends Application {
     @Override
-    public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/main.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
+    public void start(Stage stage) {
+        Scene scene = new Scene(new TotpListPane());
         stage.setTitle("myTOTP");
         stage.setScene(scene);
         stage.getIcons().add(FXUtil.getImage("logo.png"));
