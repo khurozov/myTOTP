@@ -16,7 +16,7 @@ public class FXUtil {
 
     public static Image getImage(String name) {
         return new Image(Objects.requireNonNull(
-                FXUtil.class.getResource("/assets/images/"+name)
+                FXUtil.class.getResource("/images/"+name)
         ).toExternalForm());
     }
 
