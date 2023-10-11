@@ -73,7 +73,7 @@ public class TotpDB {
     }
 
     public TotpData[] getAll() {
-        try (Statement statement = getCon().createStatement()) {
+        try (Statement statement = getCon().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             ResultSet rs = statement.executeQuery("select * from totps");
 
             rs.last();
