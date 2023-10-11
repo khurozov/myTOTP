@@ -25,7 +25,7 @@ public class AuthDataDialog extends Dialog<AuthData> {
         content.setVgap(10);
 
         int row = 0;
-        if (message != null) {
+        if (message != null && !message.isBlank()) {
             Text messageNode = new Text(message);
             messageNode.setFont(Font.font(null, FontWeight.BOLD, 20));
             GridPane.setHalignment(messageNode, HPos.CENTER);
