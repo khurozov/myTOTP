@@ -1,4 +1,4 @@
-package uz.khurozov.mytotp.component.notification;
+package uz.khurozov.mytotp.fx.notification;
 
 import javafx.animation.Animation;
 import javafx.animation.ScaleTransition;
@@ -41,12 +41,6 @@ public final class Notification {
         xProperty.addListener((observableValue, oldX, newX) -> popup.setX(newX.doubleValue()));
         this.yProperty = new SimpleDoubleProperty(this, "y", Double.NaN);
         yProperty.addListener((observableValue, oldY, newY) -> popup.setY(newY.doubleValue()));
-    }
-
-    public void show(double x, double y) {
-        setX(x);
-        setY(y);
-        doShow();
     }
 
     public void show() {

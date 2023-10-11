@@ -3,7 +3,7 @@ package uz.khurozov.mytotp;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import uz.khurozov.mytotp.component.TotpListPane;
+import uz.khurozov.mytotp.fx.TotpListPane;
 import uz.khurozov.mytotp.util.FXUtil;
 
 public class App extends Application {

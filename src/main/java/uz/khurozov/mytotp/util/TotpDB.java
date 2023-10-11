@@ -6,8 +6,6 @@ import uz.khurozov.totp.HMAC;
 import java.io.File;
 import java.nio.file.Path;
 import java.sql.*;
-import java.util.LinkedList;
-import java.util.List;
 
 public class TotpDB {
     private static TotpDB instance;

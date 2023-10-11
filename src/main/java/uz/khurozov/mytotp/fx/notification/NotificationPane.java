@@ -1,4 +1,4 @@
-package uz.khurozov.mytotp.component.notification;
+package uz.khurozov.mytotp.fx.notification;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

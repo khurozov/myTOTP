@@ -1,4 +1,4 @@
-package uz.khurozov.mytotp.component.totp;
+package uz.khurozov.mytotp.fx.totp;
 
 import javafx.geometry.Insets;
 import javafx.scene.layout.VBox;

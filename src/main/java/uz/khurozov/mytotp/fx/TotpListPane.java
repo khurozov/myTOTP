@@ -1,4 +1,4 @@
-package uz.khurozov.mytotp.component;
+package uz.khurozov.mytotp.fx;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,9 +11,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.VBox;
-import uz.khurozov.mytotp.component.notification.Notifications;
-import uz.khurozov.mytotp.component.totp.TotpView;
-import uz.khurozov.mytotp.dialog.TotpDataDialog;
+import uz.khurozov.mytotp.fx.notification.Notifications;
+import uz.khurozov.mytotp.fx.totp.TotpView;
 import uz.khurozov.mytotp.model.TotpData;
 import uz.khurozov.mytotp.util.FXUtil;
 
