@@ -1,6 +1,7 @@
 package uz.khurozov.mytotp.component;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -20,6 +21,8 @@ import java.util.Map;
 
 public class TotpListPane extends ScrollPane {
     private final VBox list;
+    private EventHandler<ActionEvent> onItemAdded;
+    private EventHandler<ActionEvent> onItemDeleted;
 
     public TotpListPane(TotpData ... initialData) {
         list = new VBox();
@@ -69,6 +72,18 @@ public class TotpListPane extends ScrollPane {
 
     private void addTotpView(TotpData totpData) {
         list.getChildren().add(new TotpView(totpData));
+
+        if (onItemAdded != null) {
+            onItemAdded.handle(new ActionEvent(totpData, this));
+        }
+    }
+
+    public void setOnItemAdded(EventHandler<ActionEvent> onItemAdded) {
+        this.onItemAdded = onItemAdded;
+    }
+
+    public void setOnItemDeleted(EventHandler<ActionEvent> onItemDeleted) {
+        this.onItemDeleted = onItemDeleted;
     }
 
     private void copyTotpCode(ActionEvent e) {
@@ -84,6 +99,10 @@ public class TotpListPane extends ScrollPane {
         TotpView totpView = (TotpView) ((MenuItem) e.getSource()).getUserData();
 
         list.getChildren().remove(totpView);
+
+        if (onItemDeleted != null) {
+            onItemDeleted.handle(new ActionEvent(totpView.getTotpData(), this));
+        }
 
         Notifications.create().text("Deleted").position(Pos.TOP_RIGHT).show();
     }
