@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import uz.khurozov.mytotp.component.notification.Notifications;
 import uz.khurozov.mytotp.component.totp.TotpView;
 import uz.khurozov.mytotp.dialog.TotpDataDialog;
+import uz.khurozov.mytotp.model.TotpData;
 import uz.khurozov.mytotp.util.FXUtil;
 
 import java.util.Map;
@@ -62,8 +63,8 @@ public class TotpListPane extends ScrollPane {
         setContextMenu(contextMenu);
     }
 
-    private void addTotpView(TotpDataDialog.TotpData totpData) {
-        list.getChildren().add(new TotpView(totpData.name(), totpData.totp()));
+    private void addTotpView(TotpData totpData) {
+        list.getChildren().add(new TotpView(totpData.name(), totpData.getTOTP()));
     }
 
     private void copyTotpCode(ActionEvent e) {

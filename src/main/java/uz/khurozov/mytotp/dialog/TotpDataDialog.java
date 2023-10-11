@@ -5,11 +5,11 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import uz.khurozov.mytotp.model.TotpData;
 import uz.khurozov.totp.HMAC;
 import uz.khurozov.totp.TOTP;
 
-public class TotpDataDialog extends Dialog<TotpDataDialog.TotpData> {
-    public record TotpData(String name, TOTP totp) {}
+public class TotpDataDialog extends Dialog<TotpData> {
 
     public TotpDataDialog() {
         setTitle("myTOTP");
@@ -63,13 +63,12 @@ public class TotpDataDialog extends Dialog<TotpDataDialog.TotpData> {
         setResultConverter(buttonType -> {
             if (buttonType == ButtonType.OK) {
                 return new TotpData(
+                        null,
                         name.getText(),
-                        new TOTP(
-                                hmac.getValue(),
-                                secret.getText(),
-                                passLen.getValue(),
-                                timeStep.getValue() * 1000
-                        )
+                        secret.getText(),
+                        hmac.getValue(),
+                        passLen.getValue(),
+                        timeStep.getValue() * 1000
                 );
             }
             return null;
