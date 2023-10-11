@@ -1,8 +1,13 @@
 package uz.khurozov.mytotp.util;
 
+import uz.khurozov.mytotp.model.TotpData;
+import uz.khurozov.totp.HMAC;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class TotpDB {
     private static TotpDB instance;
@@ -44,12 +49,12 @@ public class TotpDB {
         try (Statement statement = instance.getCon().createStatement()){
             statement.execute("""
                             CREATE TABLE IF NOT EXISTS totps (
-                                id int primary key auto_increment,
                                 name text not null,
-                                secret text unique not null,
+                                secret text not null,
                                 hmac varchar(10) not null,
                                 password_length int not null,
-                                time_step long not null
+                                time_step long not null,
+                                primary key (name, secret)
                             )
                             """);
         } catch (SQLInvalidAuthorizationSpecException | SQLNonTransientConnectionException e) {
@@ -65,5 +70,70 @@ public class TotpDB {
             throw new IllegalStateException("DB has not been initialized yet");
         }
         return instance;
+    }
+
+    public TotpData[] getAll() {
+        try (Statement statement = getCon().createStatement()) {
+            ResultSet rs = statement.executeQuery("select * from totps");
+
+            rs.last();
+            int rowsCount = rs.getRow();
+
+            if (rowsCount == 0) {
+                return new TotpData[0];
+            }
+
+            rs.beforeFirst();
+
+            int i = 0;
+            TotpData[] all = new TotpData[rowsCount];
+
+            while (rs.next()) {
+                all[i++] = new TotpData(
+                        rs.getString("name"),
+                        rs.getString("secret"),
+                        HMAC.valueOf(rs.getString("hmac")),
+                        rs.getInt("password_length"),
+                        rs.getLong("time_step")
+                );
+            }
+
+            return all;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void add(TotpData totpData) {
+        try (
+            PreparedStatement statement = getCon().prepareStatement(
+                    "insert into totps (name, secret, hmac, password_length, time_step) values (?, ?, ?, ?, ?)"
+            )
+        ) {
+            statement.setString(1, totpData.name());
+            statement.setString(2, totpData.secret());
+            statement.setString(3, totpData.hmac().name());
+            statement.setInt(4, totpData.passwordLength());
+            statement.setLong(5, totpData.timeStep());
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void remove(TotpData totpData) {
+        try (
+            PreparedStatement statement = getCon().prepareStatement(
+                    "delete from totps where name=? and secret=?"
+            )
+        ) {
+            statement.setString(1, totpData.name());
+            statement.setString(2, totpData.secret());
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
