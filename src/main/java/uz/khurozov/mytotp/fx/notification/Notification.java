@@ -41,6 +41,8 @@ public final class Notification {
         xProperty.addListener((observableValue, oldX, newX) -> popup.setX(newX.doubleValue()));
         this.yProperty = new SimpleDoubleProperty(this, "y", Double.NaN);
         yProperty.addListener((observableValue, oldY, newY) -> popup.setY(newY.doubleValue()));
+
+        pane.setOnMouseClicked(e -> hide(hideAfter));
     }
 
     public void show() {
