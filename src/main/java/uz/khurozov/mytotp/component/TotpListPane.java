@@ -21,7 +21,7 @@ import java.util.Map;
 public class TotpListPane extends ScrollPane {
     private final VBox list;
 
-    public TotpListPane() {
+    public TotpListPane(TotpData ... initialData) {
         list = new VBox();
         list.setFillWidth(true);
         list.prefWidthProperty().bind(widthProperty());
@@ -60,6 +60,11 @@ public class TotpListPane extends ScrollPane {
             miDelete.setUserData(totpView);
         });
         setContextMenu(contextMenu);
+
+
+        for (TotpData data : initialData) {
+            addTotpView(data);
+        }
     }
 
     private void addTotpView(TotpData totpData) {
