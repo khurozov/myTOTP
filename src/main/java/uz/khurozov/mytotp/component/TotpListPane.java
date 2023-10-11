@@ -63,7 +63,7 @@ public class TotpListPane extends ScrollPane {
     }
 
     private void addTotpView(TotpData totpData) {
-        list.getChildren().add(new TotpView(totpData.name(), totpData.getTOTP()));
+        list.getChildren().add(new TotpView(totpData));
     }
 
     private void copyTotpCode(ActionEvent e) {
