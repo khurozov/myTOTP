@@ -46,7 +46,6 @@ public class TotpListPane extends ScrollPane {
         contextMenu.setAutoHide(true);
         setOnContextMenuRequested(e -> {
             TotpView totpView = null;
-            System.out.println(e.getTarget());
 
             if (e.getTarget() instanceof TotpView) {
                 totpView = ((TotpView) e.getTarget());
