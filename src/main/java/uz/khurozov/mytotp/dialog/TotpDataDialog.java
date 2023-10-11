@@ -63,7 +63,6 @@ public class TotpDataDialog extends Dialog<TotpData> {
         setResultConverter(buttonType -> {
             if (buttonType == ButtonType.OK) {
                 return new TotpData(
-                        null,
                         name.getText(),
                         secret.getText(),
                         hmac.getValue(),
