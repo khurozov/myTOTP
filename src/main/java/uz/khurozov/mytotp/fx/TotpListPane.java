@@ -36,7 +36,7 @@ public class TotpListPane extends ScrollPane {
 
 
         MenuItem miAdd = new MenuItem("Add", new ImageView(FXUtil.getImage("add.png")));
-        miAdd.setOnAction(e -> new TotpDataDialog().showAndWait().ifPresent(this::addTotpView));
+        miAdd.setOnAction(e -> add());
 
         MenuItem miCopy = new MenuItem("Copy", new ImageView(FXUtil.getImage("copy.png")));
         miCopy.setOnAction(this::copyTotpCode);
@@ -85,13 +85,17 @@ public class TotpListPane extends ScrollPane {
         this.onItemDeleted = onItemDeleted;
     }
 
+    public void add() {
+        new TotpDataDialog().showAndWait().ifPresent(this::addTotpView);
+    }
+
     private void copyTotpCode(ActionEvent e) {
         TotpView totpView = (TotpView) ((MenuItem) e.getSource()).getUserData();
         String code = totpView.getCode();
 
         Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, code));
 
-        Notifications.create().text("Code copied").show();
+        Notifications.create().text("Code copied").position(Pos.TOP_RIGHT).show();
     }
 
     private void deleteTotpView(ActionEvent e) {
