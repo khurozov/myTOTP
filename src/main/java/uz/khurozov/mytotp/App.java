@@ -48,6 +48,7 @@ public class App extends Application {
         totpListPane.setOnItemDeleted(e -> db.remove((TotpData) e.getSource()));
 
         Scene scene = new Scene(totpListPane);
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), totpListPane::add);
         stage.setTitle("myTOTP");
         stage.setScene(scene);
         stage.getIcons().add(FXUtil.getImage("logo.png"));
