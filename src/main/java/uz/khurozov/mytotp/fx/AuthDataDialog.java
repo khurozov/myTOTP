@@ -8,11 +8,9 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
+import javafx.scene.text.*;
 import uz.khurozov.mytotp.model.AuthData;
 
 public class AuthDataDialog extends Dialog<AuthData> {
@@ -23,11 +21,14 @@ public class AuthDataDialog extends Dialog<AuthData> {
 
         GridPane content = new GridPane();
         content.setVgap(10);
+        content.setPrefWidth(350);
 
         int row = 0;
         if (message != null && !message.isBlank()) {
             Text messageNode = new Text(message);
             messageNode.setFont(Font.font(null, FontWeight.BOLD, 20));
+            messageNode.setWrappingWidth(300);
+            messageNode.setTextAlignment(TextAlignment.CENTER);
             GridPane.setHalignment(messageNode, HPos.CENTER);
             GridPane.setRowIndex(messageNode, row++);
 
@@ -42,14 +43,19 @@ public class AuthDataDialog extends Dialog<AuthData> {
 
         GridPane.setRowIndex(usernameText, row++);
         GridPane.setRowIndex(username, row++);
+        GridPane.setHgrow(username, Priority.ALWAYS);
         GridPane.setRowIndex(passwordText, row++);
         GridPane.setRowIndex(password, row++);
+        GridPane.setHgrow(password, Priority.ALWAYS);
 
         content.getChildren().addAll(usernameText, username, passwordText, password);
 
         err = new Text();
         err.setFill(Color.RED);
         err.setFont(Font.font(null, FontPosture.ITALIC, -1));
+        err.setWrappingWidth(300);
+        err.setTextAlignment(TextAlignment.CENTER);
+        GridPane.setHalignment(err, HPos.CENTER);
         GridPane.setRowIndex(err, row);
 
         getDialogPane().setContent(content);
