@@ -1,4 +1,4 @@
-package uz.khurozov.mytotp.fx;
+package uz.khurozov.mytotp.fx.dialog;
 
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;

@@ -11,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.VBox;
+import uz.khurozov.mytotp.fx.dialog.TotpDataDialog;
 import uz.khurozov.mytotp.fx.notification.Notifications;
 import uz.khurozov.mytotp.fx.totp.TotpView;
 import uz.khurozov.mytotp.model.TotpData;
@@ -18,12 +19,12 @@ import uz.khurozov.mytotp.util.FXUtil;
 
 import java.util.Map;
 
-public class TotpListPane extends ScrollPane {
+public class MainPane extends ScrollPane {
     private final VBox list;
     private EventHandler<ActionEvent> onItemAdded;
     private EventHandler<ActionEvent> onItemDeleted;
 
-    public TotpListPane(TotpData ... initialData) {
+    public MainPane(TotpData ... initialData) {
         list = new VBox();
         list.setFillWidth(true);
         list.prefWidthProperty().bind(widthProperty());

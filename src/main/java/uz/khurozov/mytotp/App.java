@@ -6,8 +6,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
-import uz.khurozov.mytotp.fx.AuthDataDialog;
-import uz.khurozov.mytotp.fx.TotpListPane;
+import uz.khurozov.mytotp.fx.MainPane;
+import uz.khurozov.mytotp.fx.dialog.AuthDataDialog;
 import uz.khurozov.mytotp.model.AuthData;
 import uz.khurozov.mytotp.model.TotpData;
 import uz.khurozov.mytotp.util.FXUtil;
@@ -43,12 +43,12 @@ public class App extends Application {
         TotpDB db = TotpDB.getInstance();
         TotpData[] all = db.getAll();
 
-        TotpListPane totpListPane = new TotpListPane(all);
-        totpListPane.setOnItemAdded(e -> db.add((TotpData) e.getSource()));
-        totpListPane.setOnItemDeleted(e -> db.remove((TotpData) e.getSource()));
+        MainPane mainPane = new MainPane(all);
+        mainPane.setOnItemAdded(e -> db.add((TotpData) e.getSource()));
+        mainPane.setOnItemDeleted(e -> db.remove((TotpData) e.getSource()));
 
-        Scene scene = new Scene(totpListPane);
-        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), totpListPane::add);
+        Scene scene = new Scene(mainPane);
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), mainPane::add);
         stage.setTitle("myTOTP");
         stage.setScene(scene);
         stage.getIcons().add(FXUtil.getImage("logo.png"));
