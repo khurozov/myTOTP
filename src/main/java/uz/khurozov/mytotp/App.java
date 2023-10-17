@@ -51,7 +51,7 @@ public class App extends Application {
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), mainPane::add);
         stage.setTitle("myTOTP");
         stage.setScene(scene);
-        stage.getIcons().add(GuiUtil.getFXImage("logo.png"));
+        stage.getIcons().addAll(GuiUtil.getFXImage("logo_32.png"), GuiUtil.getFXImage("logo_128.png"));
         stage.setResizable(false);
         stage.show();
     }
