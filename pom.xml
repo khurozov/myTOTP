@@ -81,6 +81,7 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/modules</outputDirectory>
+                            <overwriteExistingFiles>true</overwriteExistingFiles>
                             <modules>
                                 <module>
                                     <artifact>
