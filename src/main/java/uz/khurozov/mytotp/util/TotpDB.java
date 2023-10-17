@@ -35,6 +35,11 @@ public class TotpDB {
     }
 
     private Connection getCon() throws SQLException {
+        try {
+            Class.forName("org.h2.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         return DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
     }
 
