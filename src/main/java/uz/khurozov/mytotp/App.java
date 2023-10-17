@@ -1,6 +1,7 @@
 package uz.khurozov.mytotp;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -13,6 +14,8 @@ import uz.khurozov.mytotp.model.TotpData;
 import uz.khurozov.mytotp.util.GuiUtil;
 import uz.khurozov.mytotp.util.TotpDB;
 
+import java.awt.*;
+import java.io.IOException;
 import java.util.Optional;
 
 public class App extends Application {
@@ -53,7 +56,57 @@ public class App extends Application {
         stage.setScene(scene);
         stage.getIcons().addAll(GuiUtil.getFXImage("logo_32.png"), GuiUtil.getFXImage("logo_128.png"));
         stage.setResizable(false);
+        addTrayIcon(stage);
+
         stage.show();
+    }
+
+    private static void addTrayIcon(Stage stage) {
+        if (SystemTray.isSupported()) {
+            try {
+                Platform.setImplicitExit(false);
+
+                TrayIcon trayIcon = new TrayIcon(
+                        GuiUtil.getAWTImage("logo_16.png"),
+                        "myTOTP",
+                        trayPopupMenu(stage)
+                );
+
+                trayIcon.addActionListener(e -> Platform.runLater(() -> {
+                    stage.show();
+                    stage.toFront();
+                }));
+
+                SystemTray.getSystemTray().add(trayIcon);
+            } catch (IOException | AWTException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private static PopupMenu trayPopupMenu(Stage stage) {
+        PopupMenu popupMenu = new PopupMenu();
+
+        MenuItem miShowHide = new MenuItem("Show/Hide");
+        miShowHide.addActionListener(e -> Platform.runLater(() -> {
+            if (stage.isShowing()) {
+                stage.toBack();
+                stage.hide();
+            } else {
+                stage.show();
+                stage.toFront();
+            }
+        }));
+        popupMenu.add(miShowHide);
+
+        MenuItem miExit = new MenuItem("Exit");
+        miExit.addActionListener(e -> {
+            Platform.exit();
+            System.exit(0);
+        });
+        popupMenu.add(miExit);
+
+        return popupMenu;
     }
 
     public static void main(String[] args) {
