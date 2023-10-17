@@ -10,7 +10,7 @@ import uz.khurozov.mytotp.fx.MainPane;
 import uz.khurozov.mytotp.fx.dialog.AuthDataDialog;
 import uz.khurozov.mytotp.model.AuthData;
 import uz.khurozov.mytotp.model.TotpData;
-import uz.khurozov.mytotp.util.FXUtil;
+import uz.khurozov.mytotp.util.GuiUtil;
 import uz.khurozov.mytotp.util.TotpDB;
 
 import java.util.Optional;
@@ -51,7 +51,7 @@ public class App extends Application {
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), mainPane::add);
         stage.setTitle("myTOTP");
         stage.setScene(scene);
-        stage.getIcons().add(FXUtil.getImage("logo.png"));
+        stage.getIcons().add(GuiUtil.getFXImage("logo.png"));
         stage.setResizable(false);
         stage.show();
     }
