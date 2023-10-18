@@ -9,6 +9,8 @@ import javafx.util.Duration;
 import uz.khurozov.mytotp.util.GuiUtil;
 
 class TimeBar extends ProgressBar {
+    private double lastMod = 0;
+
     public TimeBar(double modMillis, Runnable callback) {
         Timeline timer = new Timeline(getKeyFrame(modMillis, callback));
         timer.setCycleCount(-1);
@@ -32,16 +34,16 @@ class TimeBar extends ProgressBar {
     }
 
     private KeyFrame getKeyFrame(double modMillis, Runnable callback) {
-        double steps = (int) (modMillis / 1000);
-        double towSteps = 2 * steps;
+        double steps = (int) (modMillis / 200);
 
         EventHandler<ActionEvent> handler = e -> {
             double mod = System.currentTimeMillis() % modMillis;
             setProgress(mod / modMillis);
 
-            if (callback != null && mod < towSteps) {
+            if (callback != null && mod < lastMod) {
                 callback.run();
             }
+            lastMod = mod;
         };
 
         return new KeyFrame(Duration.millis(steps), handler);
