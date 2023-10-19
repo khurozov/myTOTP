@@ -6,7 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ProgressBar;
 import javafx.util.Duration;
-import uz.khurozov.mytotp.util.GuiUtil;
+import uz.khurozov.mytotp.App;
 
 class TimeBar extends ProgressBar {
     private double lastMod = 0;
@@ -16,7 +16,7 @@ class TimeBar extends ProgressBar {
         timer.setCycleCount(-1);
         timer.playFromStart();
 
-        getStylesheets().add(GuiUtil.cssStringToData("""
+        getStylesheets().add(App.getCssAsFile("""
                 .progress-bar {
                     -fx-min-height: 5;
                     -fx-max-height: 5;

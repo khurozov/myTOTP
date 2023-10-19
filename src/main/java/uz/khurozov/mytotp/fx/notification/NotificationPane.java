@@ -11,7 +11,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import uz.khurozov.mytotp.util.GuiUtil;
+import uz.khurozov.mytotp.App;
 
 final class NotificationPane extends Region {
     private static final double SPACING = 10;
@@ -50,7 +50,7 @@ final class NotificationPane extends Region {
 
         closeBtn.setPadding(new Insets(1));
         closeBtn.prefWidthProperty().bind(closeBtn.heightProperty());
-        closeBtn.getStylesheets().add(GuiUtil.cssStringToData("""
+        closeBtn.getStylesheets().add(App.getCssAsFile("""
                 {
                     -fx-text-fill: black;
                     -fx-background-color: transparent;

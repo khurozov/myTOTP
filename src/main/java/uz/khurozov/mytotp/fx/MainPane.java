@@ -11,11 +11,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.VBox;
+import uz.khurozov.mytotp.App;
 import uz.khurozov.mytotp.fx.dialog.TotpDataDialog;
 import uz.khurozov.mytotp.fx.notification.Notifications;
 import uz.khurozov.mytotp.fx.totp.TotpView;
 import uz.khurozov.mytotp.model.TotpData;
-import uz.khurozov.mytotp.util.GuiUtil;
 
 import java.util.Map;
 
@@ -36,13 +36,13 @@ public class MainPane extends ScrollPane {
         setFitToWidth(true);
 
 
-        MenuItem miAdd = new MenuItem("Add", new ImageView(GuiUtil.getFXImage("add.png")));
+        MenuItem miAdd = new MenuItem("Add", new ImageView(App.getResourceAsExternal("/images/add.png")));
         miAdd.setOnAction(e -> add());
 
-        MenuItem miCopy = new MenuItem("Copy", new ImageView(GuiUtil.getFXImage("copy.png")));
+        MenuItem miCopy = new MenuItem("Copy", new ImageView(App.getResourceAsExternal("/images/copy.png")));
         miCopy.setOnAction(this::copyTotpCode);
 
-        MenuItem miDelete = new MenuItem("Delete", new ImageView(GuiUtil.getFXImage("delete.png")));
+        MenuItem miDelete = new MenuItem("Delete", new ImageView(App.getResourceAsExternal("/images/delete.png")));
         miDelete.setOnAction(this::deleteTotpView);
 
         ContextMenu contextMenu = new ContextMenu(miAdd, miCopy, miDelete);

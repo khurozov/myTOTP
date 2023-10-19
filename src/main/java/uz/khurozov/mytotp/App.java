@@ -3,19 +3,27 @@ package uz.khurozov.mytotp;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import uz.khurozov.mytotp.fx.MainPane;
 import uz.khurozov.mytotp.fx.dialog.AuthDataDialog;
 import uz.khurozov.mytotp.model.AuthData;
 import uz.khurozov.mytotp.model.TotpData;
-import uz.khurozov.mytotp.util.GuiUtil;
 import uz.khurozov.mytotp.util.TotpDB;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Iterator;
+import java.util.Objects;
 import java.util.Optional;
 
 public class App extends Application {
@@ -61,7 +69,10 @@ public class App extends Application {
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), mainPane::add);
         stage.setTitle(App.title);
         stage.setScene(scene);
-        stage.getIcons().addAll(GuiUtil.getFXImage("logo_32.png"), GuiUtil.getFXImage("logo_128.png"));
+        stage.getIcons().addAll(
+                new Image(App.getResourceAsExternal("/images/logo_32.png")),
+                new Image(App.getResourceAsExternal("/images/logo_128.png"))
+        );
         stage.setResizable(false);
         addTrayIcon(stage);
 
@@ -74,7 +85,7 @@ public class App extends Application {
                 Platform.setImplicitExit(false);
 
                 TrayIcon trayIcon = new TrayIcon(
-                        GuiUtil.getAWTImage("logo_16.png"),
+                        ImageIO.read(App.getResourceAsStream("/images/logo_16.png")),
                         App.title,
                         trayPopupMenu(stage)
                 );
@@ -114,5 +125,36 @@ public class App extends Application {
         popupMenu.add(miExit);
 
         return popupMenu;
+    }
+
+    public static String getResourceAsExternal(String name) {
+        return Objects.requireNonNull(
+                App.class.getResource(name)
+        ).toExternalForm();
+    }
+
+    public static InputStream getResourceAsStream(String name) {
+        return Objects.requireNonNull(
+                App.class.getResourceAsStream(name)
+        );
+    }
+
+    public static String getCssAsFile(String css) {
+        return "data:text/css;base64," + Base64.getEncoder().encodeToString(css.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static Window getActiveWindow() {
+        Iterator<Window> windows = Window.getWindows().iterator();
+
+        Window window = null;
+        do {
+            if (!windows.hasNext()) {
+                return window;
+            }
+
+            window = windows.next();
+        } while(!window.isFocused() || window instanceof PopupWindow);
+
+        return window;
     }
 }

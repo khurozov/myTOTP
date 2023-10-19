@@ -10,7 +10,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.util.Duration;
-import uz.khurozov.mytotp.util.GuiUtil;
+import uz.khurozov.mytotp.App;
 
 public final class Notification {
     private final static Duration TRANSITION_DURATION = new Duration(300);
@@ -29,7 +29,7 @@ public final class Notification {
         pane.setScaleY(0);
         popup = new Popup();
         popup.getContent().setAll(pane);
-        popup.show(GuiUtil.getActiveWindow());
+        popup.show(App.getActiveWindow());
         popup.hide();
 
         this.hideAfter = hideAfter;
@@ -55,7 +55,7 @@ public final class Notification {
     }
 
     private void doShow() {
-        popup.show(GuiUtil.getActiveWindow(), xProperty.get(), yProperty.get());
+        popup.show(App.getActiveWindow(), xProperty.get(), yProperty.get());
 
         if (transition.getStatus() != Animation.Status.STOPPED) {
             transition.stop();
