@@ -6,7 +6,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import uz.khurozov.mytotp.model.TotpData;
+import uz.khurozov.mytotp.db.TotpData;
 import uz.khurozov.totp.TOTP;
 
 public class TotpView extends VBox {

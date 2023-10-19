@@ -12,9 +12,9 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import uz.khurozov.mytotp.fx.MainPane;
 import uz.khurozov.mytotp.fx.dialog.AuthDataDialog;
-import uz.khurozov.mytotp.model.AuthData;
-import uz.khurozov.mytotp.model.TotpData;
-import uz.khurozov.mytotp.util.TotpDB;
+import uz.khurozov.mytotp.db.AuthData;
+import uz.khurozov.mytotp.db.TotpData;
+import uz.khurozov.mytotp.db.TotpDB;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

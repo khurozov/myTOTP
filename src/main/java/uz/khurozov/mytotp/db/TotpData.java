@@ -1,4 +1,4 @@
-package uz.khurozov.mytotp.model;
+package uz.khurozov.mytotp.db;
 
 import uz.khurozov.totp.HMAC;
 

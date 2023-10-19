@@ -6,7 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import uz.khurozov.mytotp.App;
-import uz.khurozov.mytotp.model.TotpData;
+import uz.khurozov.mytotp.db.TotpData;
 import uz.khurozov.totp.HMAC;
 import uz.khurozov.totp.TOTP;
 

@@ -12,7 +12,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import uz.khurozov.mytotp.App;
-import uz.khurozov.mytotp.model.AuthData;
+import uz.khurozov.mytotp.db.AuthData;
 
 public class AuthDataDialog extends Dialog<AuthData> {
     private final Text err;

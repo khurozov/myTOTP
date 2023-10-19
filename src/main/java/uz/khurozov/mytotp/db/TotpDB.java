@@ -1,6 +1,5 @@
-package uz.khurozov.mytotp.util;
+package uz.khurozov.mytotp.db;
 
-import uz.khurozov.mytotp.model.TotpData;
 import uz.khurozov.totp.HMAC;
 
 import java.io.File;
