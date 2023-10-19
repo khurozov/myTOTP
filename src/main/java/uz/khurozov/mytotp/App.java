@@ -19,6 +19,13 @@ import java.io.IOException;
 import java.util.Optional;
 
 public class App extends Application {
+
+    public static final String title = "myTOTP";
+
+    public static void main(String[] args) {
+        launch();
+    }
+
     @Override
     public void start(Stage stage) {
         AuthDataDialog authDataDialog = new AuthDataDialog("Login");
@@ -52,7 +59,7 @@ public class App extends Application {
 
         Scene scene = new Scene(mainPane);
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), mainPane::add);
-        stage.setTitle("myTOTP");
+        stage.setTitle(App.title);
         stage.setScene(scene);
         stage.getIcons().addAll(GuiUtil.getFXImage("logo_32.png"), GuiUtil.getFXImage("logo_128.png"));
         stage.setResizable(false);
@@ -68,7 +75,7 @@ public class App extends Application {
 
                 TrayIcon trayIcon = new TrayIcon(
                         GuiUtil.getAWTImage("logo_16.png"),
-                        "myTOTP",
+                        App.title,
                         trayPopupMenu(stage)
                 );
 
@@ -107,9 +114,5 @@ public class App extends Application {
         popupMenu.add(miExit);
 
         return popupMenu;
-    }
-
-    public static void main(String[] args) {
-        launch();
     }
 }

@@ -11,13 +11,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
+import uz.khurozov.mytotp.App;
 import uz.khurozov.mytotp.model.AuthData;
 
 public class AuthDataDialog extends Dialog<AuthData> {
     private final Text err;
 
     public AuthDataDialog(String message) {
-        setTitle("myTOTP");
+        setTitle(App.title);
 
         GridPane content = new GridPane();
         content.setVgap(10);

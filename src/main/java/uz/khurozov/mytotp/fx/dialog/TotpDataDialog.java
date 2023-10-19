@@ -5,6 +5,7 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import uz.khurozov.mytotp.App;
 import uz.khurozov.mytotp.model.TotpData;
 import uz.khurozov.totp.HMAC;
 import uz.khurozov.totp.TOTP;
@@ -12,7 +13,7 @@ import uz.khurozov.totp.TOTP;
 public class TotpDataDialog extends Dialog<TotpData> {
 
     public TotpDataDialog() {
-        setTitle("myTOTP");
+        setTitle(App.title);
 
         TextField name = new TextField();
         Label nameLabel = new Label("Name:");
