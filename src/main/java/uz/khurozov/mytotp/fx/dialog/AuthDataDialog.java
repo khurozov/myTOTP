@@ -17,24 +17,21 @@ import uz.khurozov.mytotp.db.AuthData;
 public class AuthDataDialog extends Dialog<AuthData> {
     private final Text err;
 
-    public AuthDataDialog(String message) {
-        setTitle(App.title);
+    public AuthDataDialog() {
+        setTitle(App.TITLE);
 
         GridPane content = new GridPane();
         content.setVgap(10);
         content.setPrefWidth(350);
 
-        int row = 0;
-        if (message != null && !message.isBlank()) {
-            Text messageNode = new Text(message);
-            messageNode.setFont(Font.font(null, FontWeight.BOLD, 20));
-            messageNode.setWrappingWidth(300);
-            messageNode.setTextAlignment(TextAlignment.CENTER);
-            GridPane.setHalignment(messageNode, HPos.CENTER);
-            GridPane.setRowIndex(messageNode, row++);
+        Text messageNode = new Text("Login");
+        messageNode.setFont(Font.font(null, FontWeight.BOLD, 20));
+        messageNode.setWrappingWidth(300);
+        messageNode.setTextAlignment(TextAlignment.CENTER);
+        GridPane.setHalignment(messageNode, HPos.CENTER);
+        GridPane.setRowIndex(messageNode, 0);
 
-            content.getChildren().add(messageNode);
-        }
+        content.getChildren().add(messageNode);
 
         Text usernameText = new Text("Username:");
         TextField username = new TextField();
@@ -42,11 +39,11 @@ public class AuthDataDialog extends Dialog<AuthData> {
         Text passwordText = new Text("Password:");
         PasswordField password = new PasswordField();
 
-        GridPane.setRowIndex(usernameText, row++);
-        GridPane.setRowIndex(username, row++);
+        GridPane.setRowIndex(usernameText, 1);
+        GridPane.setRowIndex(username, 2);
         GridPane.setHgrow(username, Priority.ALWAYS);
-        GridPane.setRowIndex(passwordText, row++);
-        GridPane.setRowIndex(password, row++);
+        GridPane.setRowIndex(passwordText, 3);
+        GridPane.setRowIndex(password, 4);
         GridPane.setHgrow(password, Priority.ALWAYS);
 
         content.getChildren().addAll(usernameText, username, passwordText, password);
@@ -57,13 +54,13 @@ public class AuthDataDialog extends Dialog<AuthData> {
         err.setWrappingWidth(300);
         err.setTextAlignment(TextAlignment.CENTER);
         GridPane.setHalignment(err, HPos.CENTER);
-        GridPane.setRowIndex(err, row);
+        GridPane.setRowIndex(err, 5);
 
         getDialogPane().setContent(content);
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         getDialogPane().lookupButton(ButtonType.OK).disableProperty().bind(new BooleanBinding() {
             {
-                super.bind(username.textProperty(), password.textProperty());
+                bind(username.textProperty(), password.textProperty());
             }
 
             @Override

@@ -13,7 +13,7 @@ import uz.khurozov.totp.TOTP;
 public class TotpDataDialog extends Dialog<TotpData> {
 
     public TotpDataDialog() {
-        setTitle(App.title);
+        setTitle(App.TITLE);
 
         TextField name = new TextField();
         Label nameLabel = new Label("Name:");

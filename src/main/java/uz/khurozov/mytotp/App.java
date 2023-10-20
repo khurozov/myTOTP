@@ -28,7 +28,7 @@ import java.util.Optional;
 
 public class App extends Application {
 
-    public static final String title = "myTOTP";
+    public static final String TITLE = "myTOTP";
 
     public static void main(String[] args) {
         launch();
@@ -36,7 +36,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
-        AuthDataDialog authDataDialog = new AuthDataDialog("Login");
+        AuthDataDialog authDataDialog = new AuthDataDialog();
 
         boolean isAuthCompleted = false;
         do {
@@ -67,7 +67,7 @@ public class App extends Application {
 
         Scene scene = new Scene(mainPane);
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), mainPane::add);
-        stage.setTitle(App.title);
+        stage.setTitle(App.TITLE);
         stage.setScene(scene);
         stage.getIcons().addAll(
                 new Image(App.getResourceAsExternal("/images/logo_32.png")),
@@ -86,7 +86,7 @@ public class App extends Application {
 
                 TrayIcon trayIcon = new TrayIcon(
                         ImageIO.read(App.getResourceAsStream("/images/logo_16.png")),
-                        App.title,
+                        App.TITLE,
                         trayPopupMenu(stage)
                 );
 
