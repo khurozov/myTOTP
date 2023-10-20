@@ -32,7 +32,6 @@ public class AuthDataDialog extends Dialog<AuthData> {
 
         Text usernameText = new Text("Username:");
         GridPane.setRowIndex(usernameText, 1);
-        GridPane.setColumnSpan(usernameText, 2);
 
         TextField username = new TextField();
         GridPane.setRowIndex(username, 2);
@@ -40,7 +39,6 @@ public class AuthDataDialog extends Dialog<AuthData> {
 
         Text passwordText = new Text("Password:");
         GridPane.setRowIndex(passwordText, 3);
-        GridPane.setColumnSpan(passwordText, 2);
 
         PasswordField password = new PasswordField();
         GridPane.setRowIndex(password, 4);
@@ -50,6 +48,7 @@ public class AuthDataDialog extends Dialog<AuthData> {
         err.setFill(Color.RED);
         err.setFont(Font.font(null, FontPosture.ITALIC, 12));
         err.setWrappingWidth(300);
+        err.setTextAlignment(TextAlignment.CENTER);
         err.setTextAlignment(TextAlignment.CENTER);
         GridPane.setHalignment(err, HPos.CENTER);
         GridPane.setRowIndex(err, 5);
