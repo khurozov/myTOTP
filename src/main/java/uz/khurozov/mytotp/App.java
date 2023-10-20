@@ -11,10 +11,10 @@ import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import uz.khurozov.mytotp.fx.MainPane;
-import uz.khurozov.mytotp.fx.dialog.AuthDataDialog;
-import uz.khurozov.mytotp.db.AuthData;
-import uz.khurozov.mytotp.db.TotpData;
-import uz.khurozov.mytotp.db.TotpDB;
+import uz.khurozov.mytotp.fx.dialog.StoreFileDataDialog;
+import uz.khurozov.mytotp.store.StoreFileData;
+import uz.khurozov.mytotp.store.TotpData;
+import uz.khurozov.mytotp.store.Store;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -36,34 +36,34 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
-        AuthDataDialog authDataDialog = new AuthDataDialog();
+        StoreFileDataDialog storeFileDataDialog = new StoreFileDataDialog();
 
         boolean isAuthCompleted = false;
         do {
-            Optional<AuthData> authDataOpt = authDataDialog.showAndWait();
+            Optional<StoreFileData> authDataOpt = storeFileDataDialog.showAndWait();
 
             if (authDataOpt.isEmpty()) {
                 return;
             }
 
-            AuthData authData = authDataOpt.get();
+            StoreFileData storeFileData = authDataOpt.get();
 
             try {
-                TotpDB.init(authData.username(), authData.password());
+                Store.init(storeFileData.username(), storeFileData.password());
 
                 isAuthCompleted = true;
             } catch (IllegalAccessException e) {
-                authDataDialog.setError(e.getMessage());
+                storeFileDataDialog.setError(e.getMessage());
             }
 
         } while (!isAuthCompleted);
 
-        TotpDB db = TotpDB.getInstance();
-        TotpData[] all = db.getAll();
+        Store store = Store.getInstance();
+        TotpData[] all = store.getAll();
 
         MainPane mainPane = new MainPane(all);
-        mainPane.setOnItemAdded(e -> db.add((TotpData) e.getSource()));
-        mainPane.setOnItemDeleted(e -> db.remove((TotpData) e.getSource()));
+        mainPane.setOnItemAdded(e -> store.add((TotpData) e.getSource()));
+        mainPane.setOnItemDeleted(e -> store.remove((TotpData) e.getSource()));
 
         Scene scene = new Scene(mainPane);
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), mainPane::add);

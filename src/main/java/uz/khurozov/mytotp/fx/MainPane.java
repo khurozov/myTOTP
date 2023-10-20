@@ -15,7 +15,7 @@ import uz.khurozov.mytotp.App;
 import uz.khurozov.mytotp.fx.dialog.TotpDataDialog;
 import uz.khurozov.mytotp.fx.notification.Notifications;
 import uz.khurozov.mytotp.fx.totp.TotpView;
-import uz.khurozov.mytotp.db.TotpData;
+import uz.khurozov.mytotp.store.TotpData;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package uz.khurozov.mytotp.db;
+package uz.khurozov.mytotp.store;
 
 import uz.khurozov.totp.HMAC;
 
@@ -6,15 +6,15 @@ import java.io.File;
 import java.nio.file.Path;
 import java.sql.*;
 
-public class TotpDB {
-    private static TotpDB instance;
+public class Store {
+    private static Store instance;
     private static boolean isInitialized;
 
     private final String USERNAME;
     private final String PASSWORD;
     private final String JDBC_URL;
 
-    private TotpDB(String username, String password) {
+    private Store(String username, String password) {
         USERNAME = username;
         int x = password.indexOf(' ');
         String filePasswd = x == -1 ? password : password.substring(0, x);
@@ -46,7 +46,7 @@ public class TotpDB {
         if (isInitialized) {
             throw new IllegalStateException("DB has been initialized already");
         }
-        instance = new TotpDB(username, password);
+        instance = new Store(username, password);
         // TODO create table if new db
         try (Statement statement = instance.getCon().createStatement()){
             statement.execute("""
@@ -67,7 +67,7 @@ public class TotpDB {
         isInitialized = true;
     }
 
-    public static synchronized TotpDB getInstance() {
+    public static synchronized Store getInstance() {
         if (!isInitialized) {
             throw new IllegalStateException("DB has not been initialized yet");
         }
