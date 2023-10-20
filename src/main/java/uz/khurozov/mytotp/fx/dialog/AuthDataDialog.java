@@ -1,6 +1,5 @@
 package uz.khurozov.mytotp.fx.dialog;
 
-import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.geometry.HPos;
 import javafx.scene.control.ButtonType;
@@ -31,30 +30,31 @@ public class AuthDataDialog extends Dialog<AuthData> {
         GridPane.setHalignment(messageNode, HPos.CENTER);
         GridPane.setRowIndex(messageNode, 0);
 
-        content.getChildren().add(messageNode);
-
         Text usernameText = new Text("Username:");
-        TextField username = new TextField();
-
-        Text passwordText = new Text("Password:");
-        PasswordField password = new PasswordField();
-
         GridPane.setRowIndex(usernameText, 1);
+        GridPane.setColumnSpan(usernameText, 2);
+
+        TextField username = new TextField();
         GridPane.setRowIndex(username, 2);
         GridPane.setHgrow(username, Priority.ALWAYS);
+
+        Text passwordText = new Text("Password:");
         GridPane.setRowIndex(passwordText, 3);
+        GridPane.setColumnSpan(passwordText, 2);
+
+        PasswordField password = new PasswordField();
         GridPane.setRowIndex(password, 4);
         GridPane.setHgrow(password, Priority.ALWAYS);
 
-        content.getChildren().addAll(usernameText, username, passwordText, password);
-
         err = new Text();
         err.setFill(Color.RED);
-        err.setFont(Font.font(null, FontPosture.ITALIC, -1));
+        err.setFont(Font.font(null, FontPosture.ITALIC, 12));
         err.setWrappingWidth(300);
         err.setTextAlignment(TextAlignment.CENTER);
         GridPane.setHalignment(err, HPos.CENTER);
         GridPane.setRowIndex(err, 5);
+
+        content.getChildren().setAll(messageNode, usernameText, username, passwordText, password, err);
 
         getDialogPane().setContent(content);
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -78,18 +78,7 @@ public class AuthDataDialog extends Dialog<AuthData> {
             }
             return null;
         });
-
-        setOnShowing(e -> Platform.runLater(() -> {
-            username.requestFocus();
-
-            boolean contains = content.getChildren().contains(err);
-            boolean isBlankError = err.getText().isBlank();
-            if (contains && isBlankError) {
-                content.getChildren().remove(err);
-            } else if (!contains && !isBlankError) {
-                content.getChildren().add(err);
-            }
-        }));
+        username.requestFocus();
     }
 
     public void setError(String error) {
