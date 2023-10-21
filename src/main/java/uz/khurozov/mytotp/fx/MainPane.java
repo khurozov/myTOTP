@@ -96,7 +96,7 @@ public class MainPane extends ScrollPane {
 
         Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, code));
 
-        Notifications.create().text("Code copied").position(Pos.TOP_RIGHT).show();
+        App.showNotification("Code copied");
     }
 
     private void deleteTotpView(ActionEvent e) {
@@ -108,6 +108,6 @@ public class MainPane extends ScrollPane {
             onItemDeleted.handle(new ActionEvent(totpView.getTotpData(), this));
         }
 
-        Notifications.create().text("Deleted").position(Pos.TOP_RIGHT).show();
+        App.showNotification("Deleted");
     }
 }

@@ -14,6 +14,7 @@ import uz.khurozov.mytotp.fx.MainPane;
 import uz.khurozov.mytotp.fx.dialog.StoreFileDataDialog;
 import uz.khurozov.mytotp.store.StoreFileData;
 import uz.khurozov.mytotp.store.TotpData;
+import uz.khurozov.mytotp.fx.notification.Notifications;
 import uz.khurozov.mytotp.store.Store;
 
 import javax.imageio.ImageIO;
@@ -156,5 +157,9 @@ public class App extends Application {
         } while(!window.isFocused() || window instanceof PopupWindow);
 
         return window;
+    }
+
+    public static void showNotification(String text) {
+        Notifications.create().title(App.TITLE).text(text).show();
     }
 }
