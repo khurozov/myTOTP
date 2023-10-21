@@ -1,8 +1,6 @@
 package uz.khurozov.mytotp.fx;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -13,18 +11,19 @@ import javafx.scene.input.DataFormat;
 import javafx.scene.layout.VBox;
 import uz.khurozov.mytotp.App;
 import uz.khurozov.mytotp.fx.dialog.TotpDataDialog;
-import uz.khurozov.mytotp.fx.notification.Notifications;
 import uz.khurozov.mytotp.fx.totp.TotpView;
+import uz.khurozov.mytotp.store.Store;
 import uz.khurozov.mytotp.store.TotpData;
 
 import java.util.Map;
 
 public class MainPane extends ScrollPane {
+    private final Store store;
     private final VBox list;
-    private EventHandler<ActionEvent> onItemAdded;
-    private EventHandler<ActionEvent> onItemDeleted;
 
-    public MainPane(TotpData ... initialData) {
+    public MainPane(Store store) {
+        this.store = store;
+
         list = new VBox();
         list.setFillWidth(true);
         list.prefWidthProperty().bind(widthProperty());
@@ -65,29 +64,20 @@ public class MainPane extends ScrollPane {
         setContextMenu(contextMenu);
 
 
-        for (TotpData data : initialData) {
-            addTotpView(data);
+        for (TotpData data : store.getAllData()) {
+            list.getChildren().add(new TotpView(data));
         }
-    }
-
-    private void addTotpView(TotpData totpData) {
-        list.getChildren().add(new TotpView(totpData));
-
-        if (onItemAdded != null) {
-            onItemAdded.handle(new ActionEvent(totpData, this));
-        }
-    }
-
-    public void setOnItemAdded(EventHandler<ActionEvent> onItemAdded) {
-        this.onItemAdded = onItemAdded;
-    }
-
-    public void setOnItemDeleted(EventHandler<ActionEvent> onItemDeleted) {
-        this.onItemDeleted = onItemDeleted;
     }
 
     public void add() {
-        new TotpDataDialog().showAndWait().ifPresent(this::addTotpView);
+        new TotpDataDialog().showAndWait().ifPresent(totpData -> {
+            if (store.existsByName(totpData.name())) {
+                App.showNotification("Name exists");
+            } else {
+                list.getChildren().add(new TotpView(totpData));
+                store.add(totpData);
+            }
+        });
     }
 
     private void copyTotpCode(ActionEvent e) {
@@ -103,10 +93,7 @@ public class MainPane extends ScrollPane {
         TotpView totpView = (TotpView) ((MenuItem) e.getSource()).getUserData();
 
         list.getChildren().remove(totpView);
-
-        if (onItemDeleted != null) {
-            onItemDeleted.handle(new ActionEvent(totpView.getTotpData(), this));
-        }
+        store.deleteByName(totpView.getName());
 
         App.showNotification("Deleted");
     }

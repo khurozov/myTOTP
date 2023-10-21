@@ -42,11 +42,9 @@ public class StoreFileDataDialog extends Dialog<StoreFileData> {
         GridPane.setColumnSpan(fileName, 2);
 
         Property<File> fileProperty = new SimpleObjectProperty<>();
-        fileProperty.addListener(observable -> {
-            if (fileProperty.getValue() != null) {
-                fileName.setText(fileProperty.getValue().getAbsolutePath());
-            }
-        });
+        fileProperty.addListener(observable -> fileName.setText(
+                fileProperty.getValue() == null ? "" : fileProperty.getValue().getAbsolutePath()
+        ));
 
         Button btnCreate = new Button("Create");
         btnCreate.setOnAction(e -> fileProperty.setValue(fileChooser.showSaveDialog(App.getActiveWindow())));

@@ -12,10 +12,9 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import uz.khurozov.mytotp.fx.MainPane;
 import uz.khurozov.mytotp.fx.dialog.StoreFileDataDialog;
-import uz.khurozov.mytotp.store.StoreFileData;
-import uz.khurozov.mytotp.store.TotpData;
 import uz.khurozov.mytotp.fx.notification.Notifications;
 import uz.khurozov.mytotp.store.Store;
+import uz.khurozov.mytotp.store.StoreFileData;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -37,35 +36,11 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
-        StoreFileDataDialog storeFileDataDialog = new StoreFileDataDialog();
+        Store store = openStore();
 
-        boolean isAuthCompleted = false;
-        do {
-            Optional<StoreFileData> authDataOpt = storeFileDataDialog.showAndWait();
+        if (store == null) return;
 
-            if (authDataOpt.isEmpty()) {
-                return;
-            }
-
-            StoreFileData storeFileData = authDataOpt.get();
-
-            try {
-                Store.init(storeFileData.username(), storeFileData.password());
-
-                isAuthCompleted = true;
-            } catch (IllegalAccessException e) {
-                storeFileDataDialog.setError(e.getMessage());
-            }
-
-        } while (!isAuthCompleted);
-
-        Store store = Store.getInstance();
-        TotpData[] all = store.getAll();
-
-        MainPane mainPane = new MainPane(all);
-        mainPane.setOnItemAdded(e -> store.add((TotpData) e.getSource()));
-        mainPane.setOnItemDeleted(e -> store.remove((TotpData) e.getSource()));
-
+        MainPane mainPane = new MainPane(store);
         Scene scene = new Scene(mainPane);
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), mainPane::add);
         stage.setTitle(App.TITLE);
@@ -78,6 +53,24 @@ public class App extends Application {
         addTrayIcon(stage);
 
         stage.show();
+    }
+
+    private static Store openStore() {
+        StoreFileDataDialog storeFileDataDialog = new StoreFileDataDialog();
+
+        while (true) {
+            Optional<StoreFileData> authDataOpt = storeFileDataDialog.showAndWait();
+
+            if (authDataOpt.isEmpty()) {
+                return null;
+            }
+
+            try {
+                return new Store(authDataOpt.orElseThrow());
+            } catch (Exception e){
+                storeFileDataDialog.setError(e.getMessage());
+            }
+        }
     }
 
     private static void addTrayIcon(Stage stage) {
