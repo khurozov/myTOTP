@@ -47,12 +47,12 @@ public class StoreFileDataDialog extends Dialog<StoreFileData> {
         ));
 
         Button btnCreate = new Button("Create");
-        btnCreate.setOnAction(e -> fileProperty.setValue(fileChooser.showSaveDialog(App.getActiveWindow())));
+        btnCreate.setOnAction(e -> fileProperty.setValue(fileChooser.showSaveDialog(App.stage)));
         GridPane.setConstraints(btnCreate, 0, 2);
         GridPane.setHgrow(btnCreate, Priority.ALWAYS);
 
         Button btnSelect = new Button("Select");
-        btnSelect.setOnAction(e -> fileProperty.setValue(fileChooser.showOpenDialog(App.getActiveWindow())));
+        btnSelect.setOnAction(e -> fileProperty.setValue(fileChooser.showOpenDialog(App.stage)));
         GridPane.setConstraints(btnSelect, 1, 2);
         GridPane.setHgrow(btnSelect, Priority.ALWAYS);
 

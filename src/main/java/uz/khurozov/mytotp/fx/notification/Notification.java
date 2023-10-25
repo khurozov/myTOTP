@@ -29,7 +29,7 @@ public final class Notification {
         pane.setScaleY(0);
         popup = new Popup();
         popup.getContent().setAll(pane);
-        popup.show(App.getActiveWindow());
+        popup.show(App.stage);
         popup.hide();
 
         this.hideAfter = hideAfter;
@@ -55,7 +55,7 @@ public final class Notification {
     }
 
     private void doShow() {
-        popup.show(App.getActiveWindow(), xProperty.get(), yProperty.get());
+        popup.show(App.stage, xProperty.get(), yProperty.get());
 
         if (transition.getStatus() != Animation.Status.STOPPED) {
             transition.stop();

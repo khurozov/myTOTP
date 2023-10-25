@@ -4,12 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import uz.khurozov.mytotp.fx.MainPane;
 import uz.khurozov.mytotp.fx.dialog.StoreFileDataDialog;
 import uz.khurozov.mytotp.fx.notification.Notifications;
@@ -22,13 +17,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
 
 public class App extends Application {
 
     public static final String TITLE = "myTOTP";
+    public static Stage stage;
 
     public static void main(String[] args) {
         launch();
@@ -36,13 +31,13 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
+        App.stage = stage;
         Store store = openStore();
 
         if (store == null) return;
 
         MainPane mainPane = new MainPane(store);
         Scene scene = new Scene(mainPane);
-        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), mainPane::add);
         stage.setTitle(App.TITLE);
         stage.setScene(scene);
         stage.getIcons().addAll(
@@ -135,21 +130,6 @@ public class App extends Application {
 
     public static String getCssAsFile(String css) {
         return "data:text/css;base64," + Base64.getEncoder().encodeToString(css.getBytes(StandardCharsets.UTF_8));
-    }
-
-    public static Window getActiveWindow() {
-        Iterator<Window> windows = Window.getWindows().iterator();
-
-        Window window = null;
-        do {
-            if (!windows.hasNext()) {
-                return window;
-            }
-
-            window = windows.next();
-        } while(!window.isFocused() || window instanceof PopupWindow);
-
-        return window;
     }
 
     public static void showNotification(String text) {
