@@ -4,76 +4,68 @@ import uz.khurozov.mytotp.crypto.CryptoUtil;
 
 import javax.crypto.SecretKey;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Store {
-    private final File file;
+    private final Path path;
     private final SecretKey secretKey;
 
     private final Map<String, TotpData> data;
 
-    public Store(StoreFileData storeFileData) {
-        try {
-            file = storeFileData.file();
-
-            secretKey = CryptoUtil.getSecretKey(
-                    storeFileData.password().toCharArray(),
-                    storeFileData.username().getBytes(StandardCharsets.UTF_8)
-            );
-
-            data = new LinkedHashMap<>();
-            init();
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new RuntimeException(e);
-        }
+    private Store(Path path, SecretKey secretKey) {
+        this.path = path;
+        this.secretKey = secretKey;
+        this.data = new LinkedHashMap<>();
     }
 
-    private void init() {
-        if (file.exists()) {
-            loadFromFile();
-        } else {
-            loadToFile();
-        }
-    }
-
-    private void loadFromFile() {
+    public static Store open(Path path, SecretKey secretKey) {
         try {
-            byte[] decrypted = CryptoUtil.decrypt(secretKey, Files.readAllBytes(file.toPath()));
+            Store store = new Store(path, secretKey);
+
+            byte[] decrypted = CryptoUtil.decrypt(secretKey, Files.readAllBytes(path));
             ObjectInputStream inputStream = new ObjectInputStream(new ByteArrayInputStream(decrypted));
 
-            int n = inputStream.readInt();
-
-            for (int i = 0; i < n; i++) {
+            while (true) {
                 try {
                     TotpData totpData = (TotpData) inputStream.readObject();
-                    data.put(totpData.name(), totpData);
+                    store.data.put(totpData.name(), totpData);
                 } catch (EOFException e) {
                     break;
                 }
             }
+
+            return store;
         } catch (ClassNotFoundException | IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void loadToFile() {
+    public static Store create(Path path, SecretKey secretKey) {
+        try {
+            if (Files.exists(path)) {
+                Files.delete(path);
+            }
+            Files.createFile(path);
+            return new Store(path, secretKey);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void syncToFile() {
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ObjectOutputStream outputStream = new ObjectOutputStream(byteArrayOutputStream);
-
-            outputStream.writeInt(data.size());
 
             for (TotpData totpData : data.values()) {
                 outputStream.writeObject(totpData);
             }
 
-            Files.write(file.toPath(), CryptoUtil.encrypt(secretKey, byteArrayOutputStream.toByteArray()));
+            Files.write(path, CryptoUtil.encrypt(secretKey, byteArrayOutputStream.toByteArray()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -85,12 +77,12 @@ public class Store {
 
     public void add(TotpData totpData) {
         data.put(totpData.name(), totpData);
-        loadToFile();
+        syncToFile();
     }
 
     public void deleteByName(String name) {
         if (data.remove(name) != null) {
-            loadToFile();
+            syncToFile();
         }
     }
 

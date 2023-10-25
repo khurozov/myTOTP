@@ -5,17 +5,20 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import uz.khurozov.mytotp.crypto.CryptoUtil;
 import uz.khurozov.mytotp.fx.MainPane;
 import uz.khurozov.mytotp.fx.dialog.StoreFileDataDialog;
 import uz.khurozov.mytotp.fx.notification.Notifications;
 import uz.khurozov.mytotp.store.Store;
 import uz.khurozov.mytotp.store.StoreFileData;
 
+import javax.crypto.SecretKey;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,7 +64,18 @@ public class App extends Application {
             }
 
             try {
-                return new Store(authDataOpt.orElseThrow());
+                StoreFileData data = authDataOpt.get();
+                Path path = data.file().toPath();
+                SecretKey secretKey = CryptoUtil.getSecretKey(
+                        data.password().toCharArray(),
+                        data.username().getBytes(StandardCharsets.UTF_8)
+                );
+
+                if (data.file().exists()) {
+                    return Store.open(path, secretKey);
+                } else {
+                    return Store.create(path, secretKey);
+                }
             } catch (Exception e){
                 storeFileDataDialog.setError(e.getMessage());
             }
