@@ -82,26 +82,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.8</version>
-                <executions>
-                    <execution>
-                        <id>default-cli</id>
-                        <configuration>
-                            <mainClass>uz.khurozov.mytotp.App</mainClass>
-                            <launcher>myTOTP</launcher>
-                            <jlinkZipName>myTOTP</jlinkZipName>
-                            <jlinkImageName>myTOTP</jlinkImageName>
-                            <noManPages>true</noManPages>
-                            <stripDebug>true</stripDebug>
-                            <noHeaderFiles>true</noHeaderFiles>
-                            <jmodsPath>${project.build.directory}/modules</jmodsPath>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
 
             <plugin>
                 <groupId>org.moditect</groupId>
