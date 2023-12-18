@@ -40,7 +40,7 @@
         <dependency>
             <groupId>uz.khurozov</groupId>
             <artifactId>totp</artifactId>
-            <version>1.0</version>
+            <version>1.0.1</version>
         </dependency>
     </dependencies>
 
@@ -79,52 +79,6 @@
                         <goals>
                             <goal>single</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.moditect</groupId>
-                <artifactId>moditect-maven-plugin</artifactId>
-                <version>1.0.0.Final</version>
-                <executions>
-                    <execution>
-                        <id>add-module-infos</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>add-module-info</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/modules</outputDirectory>
-                            <overwriteExistingFiles>true</overwriteExistingFiles>
-                            <modules>
-                                <module>
-                                    <artifact>
-                                        <groupId>uz.khurozov</groupId>
-                                        <artifactId>totp</artifactId>
-                                        <version>1.0</version>
-                                    </artifact>
-                                    <moduleInfoSource>
-                                        module totp {
-                                            requires org.apache.commons.codec;
-                                            exports uz.khurozov.totp;
-                                        }
-                                    </moduleInfoSource>
-                                </module>
-                                <module>
-                                    <artifact>
-                                        <groupId>commons-codec</groupId>
-                                        <artifactId>commons-codec</artifactId>
-                                        <version>1.16.0</version>
-                                    </artifact>
-                                    <moduleInfoSource>
-                                        module org.apache.commons.codec {
-                                            exports org.apache.commons.codec.binary;
-                                        }
-                                    </moduleInfoSource>
-                                </module>
-                            </modules>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
