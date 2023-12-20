@@ -43,7 +43,7 @@ public class TotpDataDialog extends Dialog<TotpData> {
         TitledPane advanced = new TitledPane("Advanced", new VBox(
                 10, hmacLabel, hmac, passLenLabel, passLen, timeStepLabel, timeStep
         ));
-        advanced.setExpanded(false);
+        advanced.setExpanded(true);
 
         VBox vBox = new VBox(10, nameLabel, name, secretLabel, secret, advanced);
 
