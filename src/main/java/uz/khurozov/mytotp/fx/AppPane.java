@@ -106,7 +106,7 @@ public class AppPane extends BorderPane {
 
         ContextMenu contextMenu = new ContextMenu(miAdd, miCopy, miDelete);
         contextMenu.setAutoHide(true);
-        setOnContextMenuRequested(e -> {
+        scrollPane.setOnContextMenuRequested(e -> {
             TotpView totpView = null;
 
             if (e.getTarget() instanceof TotpView) {
