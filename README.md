@@ -15,7 +15,7 @@ GUI manager for TOTP  codes
 ## Requirement(s):
 - Java 17 or higher
 
-# Run:
+## Run:
 
 ```shell
 java -jar mytotp-x.y.z.jar
