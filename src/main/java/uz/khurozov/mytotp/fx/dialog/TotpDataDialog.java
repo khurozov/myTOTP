@@ -7,7 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import uz.khurozov.mytotp.App;
 import uz.khurozov.mytotp.store.TotpData;
-import uz.khurozov.totp.HMAC;
+import uz.khurozov.totp.Algorithm;
 import uz.khurozov.totp.TOTP;
 
 public class TotpDataDialog extends Dialog<TotpData> {
@@ -23,25 +23,25 @@ public class TotpDataDialog extends Dialog<TotpData> {
         Label secretLabel = new Label("Secret:");
         secretLabel.setLabelFor(secret);
 
-        Spinner<Integer> passLen = new Spinner<>(
+        Spinner<Integer> digits = new Spinner<>(
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(6, 10)
         );
-        Label passLenLabel = new Label("Password length:");
-        passLenLabel.setLabelFor(passLen);
+        Label digitsLabel = new Label("Digits:");
+        digitsLabel.setLabelFor(digits);
 
-        ChoiceBox<HMAC> hmac = new ChoiceBox<>();
-        hmac.setItems(FXCollections.observableArrayList(HMAC.values()));
-        Label hmacLabel = new Label("HMAC algorithm:");
-        hmacLabel.setLabelFor(hmac);
+        ChoiceBox<Algorithm> algorithm = new ChoiceBox<>();
+        algorithm.setItems(FXCollections.observableArrayList(Algorithm.values()));
+        Label algorithmLabel = new Label("Algorithm:");
+        algorithmLabel.setLabelFor(algorithm);
 
-        Spinner<Integer> timeStep = new Spinner<>(
+        Spinner<Integer> period = new Spinner<>(
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 600, 30, 5)
         );
-        Label timeStepLabel = new Label("Time step (seconds):");
-        timeStepLabel.setLabelFor(timeStep);
+        Label periodLabel = new Label("Period (seconds):");
+        periodLabel.setLabelFor(period);
 
         TitledPane advanced = new TitledPane("Advanced", new VBox(
-                10, hmacLabel, hmac, passLenLabel, passLen, timeStepLabel, timeStep
+                10, algorithmLabel, algorithm, digitsLabel, digits, periodLabel, period
         ));
         advanced.setExpanded(false);
 
@@ -66,9 +66,9 @@ public class TotpDataDialog extends Dialog<TotpData> {
                 return new TotpData(
                         name.getText(),
                         secret.getText(),
-                        hmac.getValue(),
-                        passLen.getValue(),
-                        timeStep.getValue() * 1000
+                        algorithm.getValue(),
+                        digits.getValue(),
+                        period.getValue() * 1000
                 );
             }
             return null;
@@ -79,9 +79,9 @@ public class TotpDataDialog extends Dialog<TotpData> {
             secret.clear();
 
             advanced.setExpanded(false);
-            passLen.getValueFactory().setValue(6);
-            hmac.setValue(TOTP.DEFAULT_HMAC);
-            timeStep.getValueFactory().setValue(30);
+            digits.getValueFactory().setValue(6);
+            algorithm.setValue(TOTP.DEFAULT_ALGORITHM);
+            period.getValueFactory().setValue(30);
 
             name.requestFocus();
         }));

@@ -14,7 +14,7 @@ public class TotpView extends VBox {
     private final Text name;
 
     public TotpView(TotpData data) {
-        TOTP totp = new TOTP(data.hmac(), data.secret(), data.passwordLength(), data.timeStep());
+        TOTP totp = new TOTP(data.algorithm(), data.secret(), data.digits(), data.period());
 
         code = new Text(totp.getCode());
         code.setFont(Font.font("Monospace", FontWeight.BLACK, FontPosture.REGULAR, 40));
@@ -22,7 +22,7 @@ public class TotpView extends VBox {
         name = new Text(data.name());
         name.setFont(Font.font("Monospace", FontWeight.NORMAL, FontPosture.REGULAR, 10));
 
-        final TimeBar bar = new TimeBar(totp.getTimeStep(), () -> code.setText(totp.getCode()));
+        final TimeBar bar = new TimeBar(totp.getPeriod(), () -> code.setText(totp.getCode()));
         bar.prefWidthProperty().bind(widthProperty());
 
         getChildren().addAll(code, name, bar);
