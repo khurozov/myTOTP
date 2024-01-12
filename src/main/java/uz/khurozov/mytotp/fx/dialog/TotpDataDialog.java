@@ -23,6 +23,10 @@ public class TotpDataDialog extends Dialog<TotpData> {
         Label secretLabel = new Label("Secret:");
         secretLabel.setLabelFor(secret);
 
+        TextField issuer = new TextField();
+        Label issuerLabel = new Label("Issuer:");
+        issuerLabel.setLabelFor(issuer);
+
         Spinner<Integer> digits = new Spinner<>(
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(6, 10)
         );
@@ -45,19 +49,19 @@ public class TotpDataDialog extends Dialog<TotpData> {
         ));
         advanced.setExpanded(true);
 
-        VBox vBox = new VBox(10, nameLabel, name, secretLabel, secret, advanced);
+        VBox vBox = new VBox(10, nameLabel, name, secretLabel, secret, issuerLabel, issuer, advanced);
 
         getDialogPane().setContent(vBox);
         getDialogPane().setMinWidth(350);
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         getDialogPane().lookupButton(ButtonType.OK).disableProperty().bind(new BooleanBinding() {
             {
-                super.bind(name.textProperty(), secret.textProperty());
+                super.bind(name.textProperty(), secret.textProperty(), issuer.textProperty());
             }
 
             @Override
             protected boolean computeValue() {
-                return name.getText().isEmpty() || secret.getText().isEmpty();
+                return name.getText().isEmpty() || secret.getText().isBlank() || issuer.getText().isBlank();
             }
         });
 
@@ -66,6 +70,7 @@ public class TotpDataDialog extends Dialog<TotpData> {
                 return new TotpData(
                         name.getText(),
                         secret.getText(),
+                        issuer.getText(),
                         algorithm.getValue(),
                         digits.getValue(),
                         period.getValue() * 1000
@@ -77,6 +82,7 @@ public class TotpDataDialog extends Dialog<TotpData> {
         setOnShowing(e -> Platform.runLater(() -> {
             name.clear();
             secret.clear();
+            issuer.clear();
 
             advanced.setExpanded(false);
             digits.getValueFactory().setValue(6);

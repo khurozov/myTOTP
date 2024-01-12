@@ -31,8 +31,10 @@ public class Store {
 
             while (true) {
                 try {
-                    TotpData totpData = (TotpData) inputStream.readObject();
-                    store.data.put(totpData.name(), totpData);
+                    Object o = inputStream.readObject();
+                    if (o instanceof TotpData totpData) {
+                        store.data.put(totpData.name(), totpData);
+                    }
                 } catch (EOFException e) {
                     break;
                 }
