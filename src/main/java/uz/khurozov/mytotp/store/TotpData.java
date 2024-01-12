@@ -4,4 +4,4 @@ import uz.khurozov.totp.Algorithm;
 
 import java.io.Serializable;
 
-public record TotpData(String name, String secret, String issuer, Algorithm algorithm, int digits, int period) implements Serializable { }
+public record TotpData(String name, String secret, Algorithm algorithm, int digits, int period) implements Serializable { }
