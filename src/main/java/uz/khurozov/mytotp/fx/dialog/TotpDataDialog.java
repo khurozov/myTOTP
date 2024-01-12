@@ -73,7 +73,7 @@ public class TotpDataDialog extends Dialog<TotpData> {
                         issuer.getText(),
                         algorithm.getValue(),
                         digits.getValue(),
-                        period.getValue() * 1000
+                        period.getValue()
                 );
             }
             return null;
