@@ -14,9 +14,10 @@ import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import uz.khurozov.mytotp.App;
 import uz.khurozov.mytotp.crypto.CryptoUtil;
-import uz.khurozov.mytotp.fx.dialog.StoreDialog;
+import uz.khurozov.mytotp.fx.dialog.AuthDialog;
 import uz.khurozov.mytotp.fx.dialog.TotpDataDialog;
 import uz.khurozov.mytotp.fx.totp.TotpView;
 import uz.khurozov.mytotp.store.Store;
@@ -24,43 +25,58 @@ import uz.khurozov.mytotp.store.TotpData;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class AppPane extends BorderPane {
     public AppPane() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(App.TITLE);
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+
         MenuItem miNew = new MenuItem("New");
         miNew.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
-        miNew.setOnAction(e -> new StoreDialog(true).showAndWait().ifPresent(data -> {
-            try {
-                updateStore(Store.create(
-                        data.path(),
-                        CryptoUtil.getSecretKey(
-                                data.password().toCharArray(),
-                                data.username().getBytes(StandardCharsets.UTF_8)
-                        )
-                ));
-            } catch (Exception ex) {
-                App.showNotification(ex.getMessage());
-            }
-        }));
+        miNew.setOnAction(e -> {
+            File file = fileChooser.showSaveDialog(App.stage);
+            if (file == null) return;
+
+            new AuthDialog().showAndWait().ifPresent(data -> {
+                try {
+                    updateStore(Store.create(
+                            file.toPath(),
+                            CryptoUtil.getSecretKey(
+                                    data.password().toCharArray(),
+                                    data.username().getBytes(StandardCharsets.UTF_8)
+                            )
+                    ));
+                } catch (Exception ex) {
+                    App.showNotification(ex.getMessage());
+                }
+            });
+        });
 
         MenuItem miOpen = new MenuItem("Open");
         miOpen.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
-        miOpen.setOnAction(e -> new StoreDialog(false).showAndWait().ifPresent(data -> {
-            try {
-                updateStore(Store.open(
-                        data.path(),
-                        CryptoUtil.getSecretKey(
-                                data.password().toCharArray(),
-                                data.username().getBytes(StandardCharsets.UTF_8)
-                        )
-                ));
-            } catch (Exception ex) {
-                App.showNotification(ex.getMessage());
-            }
-        }));
+        miOpen.setOnAction(e -> {
+            File file = fileChooser.showOpenDialog(App.stage);
+            if (file == null || !file.exists()) return;
+
+            new AuthDialog().showAndWait().ifPresent(data -> {
+                try {
+                    updateStore(Store.open(
+                            file.toPath(),
+                            CryptoUtil.getSecretKey(
+                                    data.password().toCharArray(),
+                                    data.username().getBytes(StandardCharsets.UTF_8)
+                            )
+                    ));
+                } catch (Exception ex) {
+                    App.showNotification(ex.getMessage());
+                }
+            });
+        });
 
         setTop(new MenuBar(new Menu("Store", null, miNew, miOpen)));
         setCenter(new Text("Create new store or open"));
