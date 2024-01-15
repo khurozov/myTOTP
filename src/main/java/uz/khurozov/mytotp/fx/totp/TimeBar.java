@@ -2,17 +2,32 @@ package uz.khurozov.mytotp.fx.totp;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.ProgressBar;
 import javafx.util.Duration;
 import uz.khurozov.mytotp.App;
 
 class TimeBar extends ProgressBar {
-    private double lastMod = 0;
+    private long prevSec;
+    private long curSec;
 
-    public TimeBar(double modMillis, Runnable callback) {
-        Timeline timer = new Timeline(getKeyFrame(modMillis, callback));
+    public TimeBar(int periodSeconds, Runnable callback) {
+        curSec = System.currentTimeMillis() / 1000;
+        curSec %= periodSeconds;
+        prevSec = curSec;
+
+        Timeline timer = new Timeline(new KeyFrame(
+                Duration.seconds(1),
+                e -> {
+                    curSec++;
+                    curSec %= periodSeconds;
+                    setProgress(curSec * 1.0 / periodSeconds);
+
+                    if (callback != null && curSec < prevSec) {
+                        callback.run();
+                    }
+                    prevSec = curSec;
+                }
+        ));
         timer.setCycleCount(-1);
         timer.playFromStart();
 
@@ -31,21 +46,5 @@ class TimeBar extends ProgressBar {
                     -fx-background-insets: 0;
                 }
                 """));
-    }
-
-    private KeyFrame getKeyFrame(double modMillis, Runnable callback) {
-        double steps = (int) (modMillis / 200);
-
-        EventHandler<ActionEvent> handler = e -> {
-            double mod = System.currentTimeMillis() % modMillis;
-            setProgress(mod / modMillis);
-
-            if (callback != null && mod < lastMod) {
-                callback.run();
-            }
-            lastMod = mod;
-        };
-
-        return new KeyFrame(Duration.millis(steps), handler);
     }
 }
