@@ -14,6 +14,7 @@ class TimeBar extends ProgressBar {
         curSec = System.currentTimeMillis() / 1000;
         curSec %= periodSeconds;
         prevSec = curSec;
+        setProgress(curSec * 1.0 / periodSeconds);
 
         Timeline timer = new Timeline(new KeyFrame(
                 Duration.seconds(1),
