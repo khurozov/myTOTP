@@ -1,6 +1,8 @@
 package uz.khurozov.mytotp.fx;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -74,15 +76,13 @@ public class AppPane extends BorderPane {
         list.prefWidthProperty().bind(scrollPane.widthProperty());
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        MenuItem miAdd = new MenuItem("Add", new ImageView(App.getResourceAsExternal("/images/add.png")));
-        miAdd.setOnAction(e -> new TotpDataDialog().showAndWait().ifPresent(totpData -> {
-            if (store.existsByName(totpData.name())) {
-                App.showNotification("Name exists");
-            } else {
-                list.getChildren().add(new TotpView(totpData));
-                store.add(totpData);
-            }
-        }));
+        MenuItem addManual = new MenuItem("Manually");
+        addManual.setOnAction(AppPane.addActionHandler(store, list, TotpDataDialog.Type.MANUAL));
+
+        MenuItem addUrl = new MenuItem("From url");
+        addUrl.setOnAction(AppPane.addActionHandler(store, list, TotpDataDialog.Type.URL));
+
+        Menu mAdd = new Menu("Add", new ImageView(App.getResourceAsExternal("/images/add.png")), addManual, addUrl);
 
         MenuItem miCopy = new MenuItem("Copy", new ImageView(App.getResourceAsExternal("/images/copy.png")));
         miCopy.setOnAction(e -> {
@@ -104,7 +104,7 @@ public class AppPane extends BorderPane {
             App.showNotification("Deleted");
         });
 
-        ContextMenu contextMenu = new ContextMenu(miAdd, miCopy, miDelete);
+        ContextMenu contextMenu = new ContextMenu(mAdd, miCopy, miDelete);
         contextMenu.setAutoHide(true);
         scrollPane.setOnContextMenuRequested(e -> {
             TotpView totpView = null;
@@ -129,6 +129,17 @@ public class AppPane extends BorderPane {
 
         setCenter(scrollPane);
         checkTrayIconExists();
+    }
+
+    private static EventHandler<ActionEvent> addActionHandler(Store store, VBox list, TotpDataDialog.Type type) {
+        return e -> new TotpDataDialog(type).showAndWait().ifPresent(totpData -> {
+            if (store.existsByName(totpData.name())) {
+                App.showNotification("Name exists");
+            } else {
+                list.getChildren().add(new TotpView(totpData));
+                store.add(totpData);
+            }
+        });
     }
 
     private void checkTrayIconExists() {
