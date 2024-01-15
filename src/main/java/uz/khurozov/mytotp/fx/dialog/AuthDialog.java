@@ -42,6 +42,8 @@ public class AuthDialog extends Dialog<AuthDialog.Data> {
             }
             return null;
         });
+
+        setOnShowing(e -> username.requestFocus());
     }
 
     public record Data(String username, String password) {}
