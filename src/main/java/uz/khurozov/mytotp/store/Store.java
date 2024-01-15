@@ -26,17 +26,21 @@ public class Store {
         try {
             Store store = new Store(path, secretKey);
 
-            byte[] decrypted = CryptoUtil.decrypt(secretKey, Files.readAllBytes(path));
-            ObjectInputStream inputStream = new ObjectInputStream(new ByteArrayInputStream(decrypted));
+            byte[] encrypted = Files.readAllBytes(path);
 
-            while (true) {
-                try {
-                    Object o = inputStream.readObject();
-                    if (o instanceof TotpData totpData) {
-                        store.data.put(totpData.name(), totpData);
+            if (encrypted.length > 0) {
+                byte[] decrypted = CryptoUtil.decrypt(secretKey, encrypted);
+                ObjectInputStream inputStream = new ObjectInputStream(new ByteArrayInputStream(decrypted));
+
+                while (true) {
+                    try {
+                        Object o = inputStream.readObject();
+                        if (o instanceof TotpData totpData) {
+                            store.data.put(totpData.name(), totpData);
+                        }
+                    } catch (EOFException e) {
+                        break;
                     }
-                } catch (EOFException e) {
-                    break;
                 }
             }
 
