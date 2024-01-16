@@ -1,4 +1,4 @@
-package uz.khurozov.mytotp.crypto;
+package uz.khurozov.mytotp.util;
 
 import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;

@@ -16,7 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import uz.khurozov.mytotp.App;
-import uz.khurozov.mytotp.crypto.CryptoUtil;
+import uz.khurozov.mytotp.util.CryptoUtil;
 import uz.khurozov.mytotp.fx.dialog.AuthDialog;
 import uz.khurozov.mytotp.fx.dialog.TotpDataDialog;
 import uz.khurozov.mytotp.fx.totp.TotpView;

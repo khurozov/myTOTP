@@ -1,6 +1,6 @@
 package uz.khurozov.mytotp.store;
 
-import uz.khurozov.mytotp.crypto.CryptoUtil;
+import uz.khurozov.mytotp.util.CryptoUtil;
 
 import javax.crypto.SecretKey;
 import java.io.*;
