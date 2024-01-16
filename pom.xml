@@ -6,7 +6,7 @@
 
     <groupId>uz.khurozov</groupId>
     <artifactId>mytotp</artifactId>
-    <version>0.5.0</version>
+    <version>0.5.1</version>
     <name>myTOTP</name>
 
     <properties>
