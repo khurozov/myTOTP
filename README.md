@@ -8,9 +8,8 @@ GUI manager for TOTP  codes
 - [x] wide range HMAC algorithms (MD5, SHA1, SHA256, SHA384, SHA512)
 - [x] different code length (6 - 10)
 - [x] different time steps/window (30 seconds - 10 minutes)
-- [x] adding codes from OTP Auth url
+- [x] adding codes from QR code/TOTP url
 - [ ] exporting/importing as plain text
-- [ ] adding codes from QR Code
 - [ ] autorun with last store file
 
 ## Requirement(s):
