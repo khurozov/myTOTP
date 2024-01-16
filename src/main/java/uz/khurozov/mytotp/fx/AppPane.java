@@ -1,5 +1,6 @@
 package uz.khurozov.mytotp.fx;
 
+import com.google.zxing.NotFoundException;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Menu;
@@ -21,6 +22,7 @@ import uz.khurozov.mytotp.fx.totp.TotpView;
 import uz.khurozov.mytotp.store.Store;
 import uz.khurozov.mytotp.store.TotpData;
 import uz.khurozov.mytotp.util.CryptoUtil;
+import uz.khurozov.mytotp.util.QRCodeUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -30,8 +32,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class AppPane extends BorderPane {
+    private final FileChooser fileChooser;
     public AppPane() {
-        FileChooser fileChooser = new FileChooser();
+        fileChooser = new FileChooser();
         fileChooser.setTitle(App.TITLE);
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
 
@@ -111,7 +114,30 @@ public class AppPane extends BorderPane {
             }
         }));
 
-        Menu mAdd = new Menu("Add", new ImageView(App.getResourceAsExternal("/images/add.png")), addManual, addUrl);
+        MenuItem addQrCode = new MenuItem("From QR code");
+        addQrCode.setOnAction(e -> {
+            File file = fileChooser.showOpenDialog(App.stage);
+            if (file == null) return;
+
+            String url;
+            try {
+                url = QRCodeUtil.read(file);
+            } catch (NotFoundException | IOException ex) {
+                App.showNotification("Error on reading QR code: " + ex.getMessage());
+                return;
+            }
+
+            new TotpDataUrlDialog(url).showAndWait().ifPresent(totpData -> {
+                if (store.existsByName(totpData.name())) {
+                    App.showNotification("Name exists");
+                } else {
+                    list.getChildren().add(new TotpView(totpData));
+                    store.add(totpData);
+                }
+            });
+        });
+
+        Menu mAdd = new Menu("Add", new ImageView(App.getResourceAsExternal("/images/add.png")), addManual, addUrl, addQrCode);
 
         MenuItem miCopy = new MenuItem("Copy", new ImageView(App.getResourceAsExternal("/images/copy.png")));
         miCopy.setOnAction(e -> {
