@@ -102,7 +102,7 @@ public class AppPane extends BorderPane {
         }));
 
         MenuItem addUrl = new MenuItem("From url");
-        addUrl.setOnAction(e -> new TotpDataUrlDialog().showAndWait().ifPresent(totpData -> {
+        addUrl.setOnAction(e -> new TotpDataUrlDialog("").showAndWait().ifPresent(totpData -> {
             if (store.existsByName(totpData.name())) {
                 App.showNotification("Name exists");
             } else {

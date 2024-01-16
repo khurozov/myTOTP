@@ -9,10 +9,10 @@ import javafx.scene.layout.VBox;
 import uz.khurozov.mytotp.store.TotpData;
 
 public class TotpDataUrlDialog extends TotpDataDialog{
-    public TotpDataUrlDialog() {
+    public TotpDataUrlDialog(String initialUrl) {
         super();
 
-        TextField url = new TextField();
+        TextField url = new TextField(initialUrl);
         Label urlLabel = new Label("URL:");
         urlLabel.setLabelFor(url);
 
