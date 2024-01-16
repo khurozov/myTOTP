@@ -1,8 +1,6 @@
 package uz.khurozov.mytotp.fx;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -16,12 +14,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import uz.khurozov.mytotp.App;
-import uz.khurozov.mytotp.util.CryptoUtil;
 import uz.khurozov.mytotp.fx.dialog.AuthDialog;
-import uz.khurozov.mytotp.fx.dialog.TotpDataDialog;
+import uz.khurozov.mytotp.fx.dialog.totpdata.TotpDataManualDialog;
+import uz.khurozov.mytotp.fx.dialog.totpdata.TotpDataUrlDialog;
 import uz.khurozov.mytotp.fx.totp.TotpView;
 import uz.khurozov.mytotp.store.Store;
 import uz.khurozov.mytotp.store.TotpData;
+import uz.khurozov.mytotp.util.CryptoUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -93,10 +92,24 @@ public class AppPane extends BorderPane {
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         MenuItem addManual = new MenuItem("Manually");
-        addManual.setOnAction(AppPane.addActionHandler(store, list, TotpDataDialog.Type.MANUAL));
+        addManual.setOnAction(e -> new TotpDataManualDialog().showAndWait().ifPresent(totpData -> {
+            if (store.existsByName(totpData.name())) {
+                App.showNotification("Name exists");
+            } else {
+                list.getChildren().add(new TotpView(totpData));
+                store.add(totpData);
+            }
+        }));
 
         MenuItem addUrl = new MenuItem("From url");
-        addUrl.setOnAction(AppPane.addActionHandler(store, list, TotpDataDialog.Type.URL));
+        addUrl.setOnAction(e -> new TotpDataUrlDialog().showAndWait().ifPresent(totpData -> {
+            if (store.existsByName(totpData.name())) {
+                App.showNotification("Name exists");
+            } else {
+                list.getChildren().add(new TotpView(totpData));
+                store.add(totpData);
+            }
+        }));
 
         Menu mAdd = new Menu("Add", new ImageView(App.getResourceAsExternal("/images/add.png")), addManual, addUrl);
 
@@ -145,17 +158,6 @@ public class AppPane extends BorderPane {
 
         setCenter(scrollPane);
         checkTrayIconExists();
-    }
-
-    private static EventHandler<ActionEvent> addActionHandler(Store store, VBox list, TotpDataDialog.Type type) {
-        return e -> new TotpDataDialog(type).showAndWait().ifPresent(totpData -> {
-            if (store.existsByName(totpData.name())) {
-                App.showNotification("Name exists");
-            } else {
-                list.getChildren().add(new TotpView(totpData));
-                store.add(totpData);
-            }
-        });
     }
 
     private void checkTrayIconExists() {
