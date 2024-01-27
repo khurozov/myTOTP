@@ -2,6 +2,8 @@ package uz.khurozov.mytotp.fx;
 
 import com.google.zxing.NotFoundException;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -29,10 +31,15 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class AppPane extends BorderPane {
     private final FileChooser fileChooser;
+    private final ObjectProperty<Store> storeProp = new SimpleObjectProperty<>(null);
+    private Consumer<TotpData> addTotpDataConsumer = null;
+
     public AppPane() {
         fileChooser = new FileChooser();
         fileChooser.setTitle(App.TITLE);
@@ -80,7 +87,42 @@ public class AppPane extends BorderPane {
             });
         });
 
-        setTop(new MenuBar(new Menu("Store", null, miNew, miOpen)));
+        MenuItem miExport = new MenuItem("Export");
+        miExport.disableProperty().bind(storeProp.isNull());
+        miExport.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
+        miExport.setOnAction(e -> {
+            File file = fileChooser.showSaveDialog(App.stage);
+            if (file == null) return;
+
+            try {
+                Files.write(
+                        file.toPath(),
+                        storeProp.get().getAllData().stream()
+                                .map(TotpData::toUrl)
+                                .toList()
+                );
+            } catch (IOException ex) {
+                App.showNotification(ex.getMessage());
+            }
+        });
+
+        MenuItem miImport = new MenuItem("Import");
+        miImport.disableProperty().bind(storeProp.isNull());
+        miImport.setAccelerator(new KeyCodeCombination(KeyCode.I, KeyCombination.CONTROL_DOWN));
+        miImport.setOnAction(e -> {
+            File file = fileChooser.showOpenDialog(App.stage);
+            if (file == null || !file.exists()) return;
+
+            try {
+                Files.readAllLines(file.toPath()).stream()
+                        .map(TotpData::parseUrl)
+                        .forEach(addTotpDataConsumer);
+            } catch (IOException ex) {
+                App.showNotification(ex.getMessage());
+            }
+        });
+
+        setTop(new MenuBar(new Menu("Store", null, miNew, miOpen, miExport, miImport)));
         setCenter(new Text("Create new store or open"));
 
         setPrefWidth(360);
@@ -88,31 +130,28 @@ public class AppPane extends BorderPane {
     }
 
     private void updateStore(Store store) {
+        storeProp.set(store);
         VBox list = new VBox();
+
+        addTotpDataConsumer = totpData -> {
+            if (store.existsByName(totpData.name())) {
+                App.showNotification("Name exists");
+            } else {
+                list.getChildren().add(new TotpView(totpData));
+                store.add(totpData);
+            }
+        };
+
         ScrollPane scrollPane = new ScrollPane(list);
 
         list.prefWidthProperty().bind(scrollPane.widthProperty());
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         MenuItem addManual = new MenuItem("Manually");
-        addManual.setOnAction(e -> new TotpDataManualDialog().showAndWait().ifPresent(totpData -> {
-            if (store.existsByName(totpData.name())) {
-                App.showNotification("Name exists");
-            } else {
-                list.getChildren().add(new TotpView(totpData));
-                store.add(totpData);
-            }
-        }));
+        addManual.setOnAction(e -> new TotpDataManualDialog().showAndWait().ifPresent(addTotpDataConsumer));
 
         MenuItem addUrl = new MenuItem("From url");
-        addUrl.setOnAction(e -> new TotpDataUrlDialog("").showAndWait().ifPresent(totpData -> {
-            if (store.existsByName(totpData.name())) {
-                App.showNotification("Name exists");
-            } else {
-                list.getChildren().add(new TotpView(totpData));
-                store.add(totpData);
-            }
-        }));
+        addUrl.setOnAction(e -> new TotpDataUrlDialog("").showAndWait().ifPresent(addTotpDataConsumer));
 
         MenuItem addQrCode = new MenuItem("From QR code");
         addQrCode.setOnAction(e -> {
@@ -127,14 +166,7 @@ public class AppPane extends BorderPane {
                 return;
             }
 
-            new TotpDataUrlDialog(url).showAndWait().ifPresent(totpData -> {
-                if (store.existsByName(totpData.name())) {
-                    App.showNotification("Name exists");
-                } else {
-                    list.getChildren().add(new TotpView(totpData));
-                    store.add(totpData);
-                }
-            });
+            new TotpDataUrlDialog(url).showAndWait().ifPresent(addTotpDataConsumer);
         });
 
         Menu mAdd = new Menu("Add", new ImageView(App.getResourceAsExternal("/images/add.png")), addManual, addUrl, addQrCode);
