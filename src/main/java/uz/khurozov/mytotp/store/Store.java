@@ -4,11 +4,13 @@ import uz.khurozov.mytotp.util.CryptoUtil;
 
 import javax.crypto.SecretKey;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Store {
     private final Path path;
@@ -30,22 +32,18 @@ public class Store {
 
             if (encrypted.length > 0) {
                 byte[] decrypted = CryptoUtil.decrypt(secretKey, encrypted);
-                ObjectInputStream inputStream = new ObjectInputStream(new ByteArrayInputStream(decrypted));
-
-                while (true) {
-                    try {
-                        Object o = inputStream.readObject();
-                        if (o instanceof TotpData totpData) {
-                            store.data.put(totpData.label(), totpData);
-                        }
-                    } catch (EOFException e) {
-                        break;
-                    }
-                }
+                new BufferedReader(new InputStreamReader(new ByteArrayInputStream(decrypted), StandardCharsets.UTF_8))
+                        .lines()
+                        .forEach(url -> {
+                            try {
+                                TotpData totpData = TotpData.parseUrl(url);
+                                store.data.put(totpData.label(), totpData);
+                            } catch (Exception ignored) {}
+                        });
             }
 
             return store;
-        } catch (ClassNotFoundException | IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -64,14 +62,11 @@ public class Store {
 
     private void syncToFile() {
         try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ObjectOutputStream outputStream = new ObjectOutputStream(byteArrayOutputStream);
+            String lines = data.values().stream()
+                    .map(TotpData::toUrl)
+                    .collect(Collectors.joining("\n"));
 
-            for (TotpData totpData : data.values()) {
-                outputStream.writeObject(totpData);
-            }
-
-            Files.write(path, CryptoUtil.encrypt(secretKey, byteArrayOutputStream.toByteArray()));
+            Files.write(path, CryptoUtil.encrypt(secretKey, lines.getBytes(StandardCharsets.UTF_8)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
