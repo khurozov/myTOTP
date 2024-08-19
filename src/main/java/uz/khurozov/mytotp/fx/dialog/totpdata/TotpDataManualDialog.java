@@ -13,9 +13,9 @@ public class TotpDataManualDialog extends TotpDataDialog{
     public TotpDataManualDialog() {
         super();
 
-        TextField name = new TextField();
-        Label nameLabel = new Label("Name:");
-        nameLabel.setLabelFor(name);
+        TextField label = new TextField();
+        Label labelLabel = new Label("Label:");
+        labelLabel.setLabelFor(label);
 
         TextField secret = new TextField();
         Label secretLabel = new Label("Secret:");
@@ -43,23 +43,23 @@ public class TotpDataManualDialog extends TotpDataDialog{
         ));
         advanced.setExpanded(true);
 
-        getDialogPane().setContent(new VBox(10, nameLabel, name, secretLabel, secret, advanced));
+        getDialogPane().setContent(new VBox(10, labelLabel, label, secretLabel, secret, advanced));
 
         getDialogPane().lookupButton(ButtonType.OK).disableProperty().bind(new BooleanBinding() {
             {
-                super.bind(name.textProperty(), secret.textProperty());
+                super.bind(label.textProperty(), secret.textProperty());
             }
 
             @Override
             protected boolean computeValue() {
-                return name.getText().isBlank() || secret.getText().isBlank();
+                return label.getText().isBlank() || secret.getText().isBlank();
             }
         });
 
         setResultConverter(buttonType -> {
             if (buttonType == ButtonType.OK) {
                 return new TotpData(
-                        name.getText().trim(),
+                        label.getText().trim(),
                         secret.getText().trim(),
                         algorithm.getValue(),
                         digits.getValue(),
@@ -75,7 +75,7 @@ public class TotpDataManualDialog extends TotpDataDialog{
             algorithm.setValue(TOTP.DEFAULT_ALGORITHM);
             period.getValueFactory().setValue(30);
 
-            name.requestFocus();
+            label.requestFocus();
         }));
     }
 }

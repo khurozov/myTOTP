@@ -36,7 +36,7 @@ public class Store {
                     try {
                         Object o = inputStream.readObject();
                         if (o instanceof TotpData totpData) {
-                            store.data.put(totpData.name(), totpData);
+                            store.data.put(totpData.label(), totpData);
                         }
                     } catch (EOFException e) {
                         break;
@@ -82,17 +82,17 @@ public class Store {
     }
 
     public void add(TotpData totpData) {
-        data.put(totpData.name(), totpData);
+        data.put(totpData.label(), totpData);
         syncToFile();
     }
 
-    public void deleteByName(String name) {
-        if (data.remove(name) != null) {
+    public void deleteByLabel(String label) {
+        if (data.remove(label) != null) {
             syncToFile();
         }
     }
 
-    public boolean existsByName(String name) {
-        return data.containsKey(name);
+    public boolean existsByLabel(String label) {
+        return data.containsKey(label);
     }
 }

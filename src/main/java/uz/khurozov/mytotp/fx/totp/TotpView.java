@@ -11,7 +11,7 @@ import uz.khurozov.totp.TOTP;
 
 public class TotpView extends VBox {
     private final Text code;
-    private final Text name;
+    private final Text label;
 
     public TotpView(TotpData data) {
         TOTP totp = new TOTP(data.algorithm(), data.secret(), data.digits(), data.period());
@@ -19,21 +19,21 @@ public class TotpView extends VBox {
         code = new Text(totp.getCode());
         code.setFont(Font.font("Monospace", FontWeight.BLACK, FontPosture.REGULAR, 40));
 
-        name = new Text(data.name());
-        name.setFont(Font.font("Monospace", FontWeight.NORMAL, FontPosture.REGULAR, 10));
+        label = new Text(data.label());
+        label.setFont(Font.font("Monospace", FontWeight.NORMAL, FontPosture.REGULAR, 10));
 
         final TimeBar bar = new TimeBar(totp.getPeriod(), () -> code.setText(totp.getCode()));
         bar.prefWidthProperty().bind(widthProperty());
 
-        getChildren().addAll(code, name, bar);
+        getChildren().addAll(code, label, bar);
 
         setSpacing(5);
         setPadding(new Insets(5));
         setFillWidth(true);
     }
 
-    public String getName() {
-        return name.getText();
+    public String getLabel() {
+        return label.getText();
     }
 
     public String getCode() {

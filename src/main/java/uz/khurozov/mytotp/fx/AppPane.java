@@ -134,8 +134,8 @@ public class AppPane extends BorderPane {
         VBox list = new VBox();
 
         addTotpDataConsumer = totpData -> {
-            if (store.existsByName(totpData.name())) {
-                App.showNotification("Name exists");
+            if (store.existsByLabel(totpData.label())) {
+                App.showNotification("Label exists");
             } else {
                 list.getChildren().add(new TotpView(totpData));
                 store.add(totpData);
@@ -186,7 +186,7 @@ public class AppPane extends BorderPane {
             TotpView totpView = (TotpView) ((MenuItem) e.getSource()).getUserData();
 
             list.getChildren().remove(totpView);
-            store.deleteByName(totpView.getName());
+            store.deleteByLabel(totpView.getLabel());
 
             App.showNotification("Deleted");
         });

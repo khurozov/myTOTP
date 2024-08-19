@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 public record TotpData(
-        String name,
+        String label,
         String secret,
         Algorithm algorithm,
         int digits,
@@ -70,13 +70,13 @@ public record TotpData(
 
     public String toUrl() {
         String issuer = null;
-        // name is the label actually, it could contain the issuer
-        int index = name.indexOf(":");
+        // label could contain the issuer
+        int index = label.indexOf(":");
         if (index != -1) {
-            issuer = name.substring(0, index);
+            issuer = label.substring(0, index);
         }
         return "otpauth://totp/"
-                + encodePath(name)
+                + encodePath(label)
                 + "?secret=" + encode(secret)
                 + "&algorithm=" + algorithm
                 + "&digits=" + digits
