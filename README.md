@@ -6,8 +6,8 @@ GUI manager for TOTP  codes
 - [x] multiple accounts (saved on files, protected with username & password)
 - [x] tray icon (don't have to open store file until powering of computer)
 - [x] wide range HMAC algorithms (MD5, SHA1, SHA256, SHA384, SHA512)
-- [x] different code length (6 - 10)
-- [x] different time steps/window (30 seconds - 10 minutes)
+- [x] different code lengths (6 - 10)
+- [x] different time periods (30 seconds - 10 minutes)
 - [x] adding codes from QR code/otpauth url
 - [x] exporting/importing as plain text of otpauth url(s) 
 
