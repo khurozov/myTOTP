@@ -27,7 +27,7 @@ public record TotpData(
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-        String name = uri.getPath().substring(1);
+        String label = uri.getPath().substring(1);
 
         String rawQuery = uri.getRawQuery();
         String[] params = rawQuery.split("&");
@@ -56,37 +56,46 @@ public record TotpData(
         int period = p != null ? Integer.parseInt(p) : TOTP.DEFAULT_PERIOD;
 
         // The issuer is an optional string value indicating the provider or service the credential is associated with.
-        String issuer = queries.get("issuer");
+        String issuer = decode(queries.get("issuer"));
 
         // The label is used to identify the account to which a credential is associated with.
         // It is formatted as "issuer:account" when both parameters are present.
         // It is formatted as "account" when there is no Issuer.
-        String label = issuer != null ? String.format("%s:%s", issuer, name) : name;
+        if (issuer != null && !label.startsWith(issuer+":")) {
+            label = String.format("%s:%s", issuer, label);
+        }
 
         return new TotpData(label, secret, algorithm, digits, period);
     }
 
     public String toUrl() {
         String issuer = null;
-        String accountName;
         // name is the label actually, it could contain the issuer
         int index = name.indexOf(":");
-        if (index == -1) {
-            accountName = name;
-        } else {
+        if (index != -1) {
             issuer = name.substring(0, index);
-            accountName = name.substring(index+1);
         }
-        StringBuilder sb = new StringBuilder(
-                "otpauth://totp/"
-                + URLEncoder.encode(accountName, StandardCharsets.UTF_8).replaceAll("\\+", "%20")
-                + "?secret=" + URLEncoder.encode(secret, StandardCharsets.UTF_8).replaceAll("\\+", "%20")
+        return "otpauth://totp/"
+                + encodePath(name)
+                + "?secret=" + encode(secret)
                 + "&algorithm=" + algorithm
                 + "&digits=" + digits
-                + "&period=" + period);
-        if (issuer != null) {
-            sb.append(String.format("&issuer=%s", issuer));
-        }
-        return sb.toString();
+                + "&period=" + period
+                + (issuer != null ? "&issuer=" + encode(issuer) : "");
+    }
+    
+    private static String encode(String str) {
+        if (str == null) return null;
+        return URLEncoder.encode(str, StandardCharsets.UTF_8);
+    }
+    
+    private static String encodePath(String str) {
+        if (str == null) return null;
+        return URLEncoder.encode(str, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+    }
+    
+    private static String decode(String str) {
+        if (str == null) return null;
+        return URLDecoder.decode(str, StandardCharsets.UTF_8);
     }
 }
