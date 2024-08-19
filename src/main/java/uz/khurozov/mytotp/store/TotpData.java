@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.Arrays;
 
 public record TotpData(
         String label,
@@ -27,45 +27,41 @@ public record TotpData(
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-        String label = uri.getPath().substring(1);
 
-        String rawQuery = uri.getRawQuery();
-        String[] params = rawQuery.split("&");
-        HashMap<String, String> queries = new HashMap<>();
+        var ref = new Object() {
+            String label = null;
+            String secret = null;
+            Algorithm algorithm = TOTP.DEFAULT_ALGORITHM;
+            int digits = TOTP.DEFAULT_DIGITS;
+            int period = TOTP.DEFAULT_PERIOD;
+            String issuer = null;
+        };
+        
+        ref.label = uri.getPath().substring(1);
+        Arrays.stream(uri.getRawQuery().split("&"))
+                .map(q -> q.split("="))
+                .forEach(p -> {
+                    switch (p[0]) {
+                        case "secret" -> ref.secret = decode(p[1]);
+                        case "algorithm" -> ref.algorithm = Algorithm.valueOf(p[1]);
+                        case "digits" -> ref.digits = Integer.parseInt(p[1]);
+                        case "period" -> ref.period = Integer.parseInt(p[1]);
+                        case "issuer" -> ref.issuer = decode(p[1]);
+                    }
+                });
 
-        for (String param : params) {
-            int i = param.indexOf('=');
-            if (i > 0) {
-                queries.put(param.substring(0, i), param.substring(i + 1));
-            }
-        }
-
-        String s = queries.get("secret");
-        if (s == null) throw new IllegalArgumentException("No secret param in url '" + url + "'");
+        if (ref.secret == null) throw new IllegalArgumentException("No secret param in url '" + url + "'");
         // secret might have url encoded characters
-        String secret = URLDecoder.decode(s, StandardCharsets.UTF_8);
-
-        String algo = queries.get("algorithm");
-        Algorithm algorithm = algo != null ? Algorithm.valueOf(algo) : TOTP.DEFAULT_ALGORITHM;
-
-
-        String d = queries.get("digits");
-        int digits = d != null ? Integer.parseInt(d) : TOTP.DEFAULT_DIGITS;
-
-        String p = queries.get("period");
-        int period = p != null ? Integer.parseInt(p) : TOTP.DEFAULT_PERIOD;
-
-        // The issuer is an optional string value indicating the provider or service the credential is associated with.
-        String issuer = decode(queries.get("issuer"));
+        ref.secret = URLDecoder.decode(ref.secret, StandardCharsets.UTF_8);
 
         // The label is used to identify the account to which a credential is associated with.
         // It is formatted as "issuer:account" when both parameters are present.
         // It is formatted as "account" when there is no Issuer.
-        if (issuer != null && !label.startsWith(issuer+":")) {
-            label = String.format("%s:%s", issuer, label);
+        if (ref.issuer != null && !ref.label.startsWith(ref.issuer+":")) {
+            ref.label = String.format("%s:%s", ref.issuer, ref.label);
         }
 
-        return new TotpData(label, secret, algorithm, digits, period);
+        return new TotpData(ref.label, ref.secret, ref.algorithm, ref.digits, ref.period);
     }
 
     public String toUrl() {
