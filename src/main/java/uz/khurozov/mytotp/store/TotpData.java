@@ -55,15 +55,38 @@ public record TotpData(
         String p = queries.get("period");
         int period = p != null ? Integer.parseInt(p) : TOTP.DEFAULT_PERIOD;
 
-        return new TotpData(name, secret, algorithm, digits, period);
+        // The issuer is an optional string value indicating the provider or service the credential is associated with.
+        String issuer = queries.get("issuer");
+
+        // The label is used to identify the account to which a credential is associated with.
+        // It is formatted as "issuer:account" when both parameters are present.
+        // It is formatted as "account" when there is no Issuer.
+        String label = issuer != null ? String.format("%s:%s", issuer, name) : name;
+
+        return new TotpData(label, secret, algorithm, digits, period);
     }
 
     public String toUrl() {
-        return "otpauth://totp/"
-                + URLEncoder.encode(name, StandardCharsets.UTF_8).replaceAll("\\+", "%20")
+        String issuer = null;
+        String accountName;
+        // name is the label actually, it could contain the issuer
+        int index = name.indexOf(":");
+        if (index == -1) {
+            accountName = name;
+        } else {
+            issuer = name.substring(0, index);
+            accountName = name.substring(index+1);
+        }
+        StringBuilder sb = new StringBuilder(
+                "otpauth://totp/"
+                + URLEncoder.encode(accountName, StandardCharsets.UTF_8).replaceAll("\\+", "%20")
                 + "?secret=" + URLEncoder.encode(secret, StandardCharsets.UTF_8).replaceAll("\\+", "%20")
                 + "&algorithm=" + algorithm
                 + "&digits=" + digits
-                + "&period=" + period;
+                + "&period=" + period);
+        if (issuer != null) {
+            sb.append(String.format("&issuer=%s", issuer));
+        }
+        return sb.toString();
     }
 }
