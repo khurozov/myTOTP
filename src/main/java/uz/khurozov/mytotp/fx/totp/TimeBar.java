@@ -1,10 +1,9 @@
 package uz.khurozov.mytotp.fx.totp;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.scene.control.ProgressBar;
-import javafx.util.Duration;
 import uz.khurozov.mytotp.App;
+
+import java.util.TimerTask;
 
 class TimeBar extends ProgressBar {
     private long prevSec;
@@ -16,21 +15,19 @@ class TimeBar extends ProgressBar {
         prevSec = curSec;
         setProgress(curSec * 1.0 / periodSeconds);
 
-        Timeline timer = new Timeline(new KeyFrame(
-                Duration.seconds(1),
-                e -> {
-                    curSec++;
-                    curSec %= periodSeconds;
-                    setProgress(curSec * 1.0 / periodSeconds);
+        App.TIMER.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                curSec++;
+                curSec %= periodSeconds;
+                setProgress(curSec * 1.0 / periodSeconds);
 
-                    if (callback != null && curSec < prevSec) {
-                        callback.run();
-                    }
-                    prevSec = curSec;
+                if (callback != null && curSec < prevSec) {
+                    callback.run();
                 }
-        ));
-        timer.setCycleCount(-1);
-        timer.playFromStart();
+                prevSec = curSec;
+            }
+        }, 1000 - (System.currentTimeMillis() % 1000), 1000L);
 
         getStylesheets().add(App.getCssAsFile("""
                 .progress-bar {

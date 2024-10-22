@@ -11,10 +11,12 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.Timer;
 
 public class App extends Application {
 
     public static final String TITLE = "myTOTP";
+    public static final Timer TIMER = new Timer();
     public static Stage stage;
 
     public static void main(String[] args) {
